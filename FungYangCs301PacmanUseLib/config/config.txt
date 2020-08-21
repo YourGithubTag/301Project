@@ -1,0 +1,22 @@
+mazeHeight 15
+mazeWidth 19
+
+robotMarkerExt 70
+checkFoodExt 80
+checkGhostExt 80
+
+numRandomGhosts 1
+numAStarGhosts 1
+numSwingGhosts 1
+
+ghostCoordPerSecHigh 0.5
+ghostCoordPerSecLow 0.2
+
+maxPacmanEatGhostTime 5
+numRandomSuperFood 5
+
+student_practice_mode 0
+writeLogFlag 1
+
+gameLevel 0
+benchmarkMode 0
