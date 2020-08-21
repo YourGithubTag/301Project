@@ -1,0 +1,22 @@
+﻿  data.cpp
+  fungYangCs301SimMain.cpp
+D:\GitHub\301Project\FungYangCs301PacmanUseLib\fungYangCs301SimMain.cpp(62,25): warning C4305: '=': truncation from 'double' to 'float'
+D:\GitHub\301Project\FungYangCs301PacmanUseLib\fungYangCs301SimMain.cpp(64,34): warning C4305: '=': truncation from 'double' to 'float'
+D:\GitHub\301Project\FungYangCs301PacmanUseLib\fungYangCs301SimMain.cpp(77,22): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+D:\GitHub\301Project\FungYangCs301PacmanUseLib\fungYangCs301SimMain.cpp(113,21): warning C4018: '<': signed/unsigned mismatch
+  Generating code
+  Previous IPDB not found, fall back to full compilation.
+  All 929 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Finished generating code
+FungYangCs301PacmenRobotSimGameLib.lib(mazeGen.obj) : warning LNK4099: PDB 'FungYangCs301PacmenRobotSimGameLib.pdb' was not found with 'FungYangCs301PacmenRobotSimGameLib.lib(mazeGen.obj)' or at 'D:\GitHub\301Project\Release\FungYangCs301PacmenRobotSimGameLib.pdb'; linking object as if no debug info
+FungYangCs301PacmenRobotSimGameLib.lib(gameManager.obj) : warning LNK4099: PDB 'FungYangCs301PacmenRobotSimGameLib.pdb' was not found with 'FungYangCs301PacmenRobotSimGameLib.lib(gameManager.obj)' or at 'D:\GitHub\301Project\Release\FungYangCs301PacmenRobotSimGameLib.pdb'; linking object as if no debug info
+FungYangCs301PacmenRobotSimGameLib.lib(highPerformanceTimer.obj) : warning LNK4099: PDB 'FungYangCs301PacmenRobotSimGameLib.pdb' was not found with 'FungYangCs301PacmenRobotSimGameLib.lib(highPerformanceTimer.obj)' or at 'D:\GitHub\301Project\Release\FungYangCs301PacmenRobotSimGameLib.pdb'; linking object as if no debug info
+FungYangCs301PacmenRobotSimGameLib.lib(mainFungGLAppEngin.obj) : warning LNK4099: PDB 'FungYangCs301PacmenRobotSimGameLib.pdb' was not found with 'FungYangCs301PacmenRobotSimGameLib.lib(mainFungGLAppEngin.obj)' or at 'D:\GitHub\301Project\Release\FungYangCs301PacmenRobotSimGameLib.pdb'; linking object as if no debug info
+FungYangCs301PacmenRobotSimGameLib.lib(Geometry.obj) : warning LNK4099: PDB 'FungYangCs301PacmenRobotSimGameLib.pdb' was not found with 'FungYangCs301PacmenRobotSimGameLib.lib(Geometry.obj)' or at 'D:\GitHub\301Project\Release\FungYangCs301PacmenRobotSimGameLib.pdb'; linking object as if no debug info
+FungYangCs301PacmenRobotSimGameLib.lib(my_GL_Draw_Funcs.obj) : warning LNK4099: PDB 'FungYangCs301PacmenRobotSimGameLib.pdb' was not found with 'FungYangCs301PacmenRobotSimGameLib.lib(my_GL_Draw_Funcs.obj)' or at 'D:\GitHub\301Project\Release\FungYangCs301PacmenRobotSimGameLib.pdb'; linking object as if no debug info
+FungYangCs301PacmenRobotSimGameLib.lib(AStarManager.obj) : warning LNK4099: PDB 'FungYangCs301PacmenRobotSimGameLib.pdb' was not found with 'FungYangCs301PacmenRobotSimGameLib.lib(AStarManager.obj)' or at 'D:\GitHub\301Project\Release\FungYangCs301PacmenRobotSimGameLib.pdb'; linking object as if no debug info
+FungYangCs301PacmenRobotSimGameLib.lib(texture.obj) : warning LNK4099: PDB 'FungYangCs301PacmenRobotSimGameLib.pdb' was not found with 'FungYangCs301PacmenRobotSimGameLib.lib(texture.obj)' or at 'D:\GitHub\301Project\Release\FungYangCs301PacmenRobotSimGameLib.pdb'; linking object as if no debug info
+FungYangCs301PacmenRobotSimGameLib.lib(Lighting.obj) : warning LNK4099: PDB 'FungYangCs301PacmenRobotSimGameLib.pdb' was not found with 'FungYangCs301PacmenRobotSimGameLib.lib(Lighting.obj)' or at 'D:\GitHub\301Project\Release\FungYangCs301PacmenRobotSimGameLib.pdb'; linking object as if no debug info
+FungYangCs301PacmenRobotSimGameLib.lib(Utilities.obj) : warning LNK4099: PDB 'FungYangCs301PacmenRobotSimGameLib.pdb' was not found with 'FungYangCs301PacmenRobotSimGameLib.lib(Utilities.obj)' or at 'D:\GitHub\301Project\Release\FungYangCs301PacmenRobotSimGameLib.pdb'; linking object as if no debug info
+FungYangCs301PacmenRobotSimGameLib.lib(PathFinder.obj) : warning LNK4099: PDB 'FungYangCs301PacmenRobotSimGameLib.pdb' was not found with 'FungYangCs301PacmenRobotSimGameLib.lib(PathFinder.obj)' or at 'D:\GitHub\301Project\Release\FungYangCs301PacmenRobotSimGameLib.pdb'; linking object as if no debug info
+  FungYangCs301PacmanUseLib.vcxproj -> D:\GitHub\301Project\Release\FungYangCs301PacmanUseLib.exe
