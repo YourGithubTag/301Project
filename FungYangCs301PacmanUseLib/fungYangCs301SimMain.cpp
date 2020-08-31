@@ -40,6 +40,7 @@ vector<ghostInfoPack> ghostInfoPackList;// can get
 //}=================================================
 
 highPerformanceTimer myTimer;
+highPerformanceTimer turnTimer;
 
 //just a helper function
 void setVirtualCarSpeed(float linearSpeed, float angularSpeed)
@@ -86,21 +87,21 @@ int virtualCarUpdate()
 			blackSensorCount += 1.0;
 		}
 	}
-    //}------------------------------------
+	//}------------------------------------
 
 	//{------------------------------------
 	//updat linear and rotational speed based on sensor information
 	if (blackSensorCount > 0.0)
-		setVirtualCarSpeed(virtualCarLinearSpeed_seed, virtualCarAngularSpeed_seed*tiltSum);
-		//setVirtualCarSpeed(0.60, 40.0*tiltSum);
+		setVirtualCarSpeed(virtualCarLinearSpeed_seed, virtualCarAngularSpeed_seed * tiltSum);
+	//setVirtualCarSpeed(0.60, 40.0*tiltSum);
 	else
-	    setVirtualCarSpeed(0.0, virtualCarAngularSpeed_seed);
-		//setVirtualCarSpeed(0.0, 40.0);
-	//}---------------------------------------
+		setVirtualCarSpeed(0.0, virtualCarAngularSpeed_seed);
+	//setVirtualCarSpeed(0.0, 40.0);
+//}---------------------------------------
 
-	//below is optional. just to provid some status report and function test result .
-	//You can try to use "printf()" to reimplemet this "cout" c++ section in a c style instead.
-	//{--------------------------------------------------------------	
+//below is optional. just to provid some status report and function test result .
+//You can try to use "printf()" to reimplemet this "cout" c++ section in a c style instead.
+//{--------------------------------------------------------------	
 	if (myTimer.getTimer() > 0.5)
 	{
 		myTimer.resetTimer();
@@ -112,8 +113,8 @@ int virtualCarUpdate()
 		cout << " ghost list info:" << endl;
 		for (int i = 0; i < ghostInfoPackList.size(); i++)
 		{
-			cout << "g[" << i << "]: (" << ghostInfoPackList[i].coord_x << ", " << ghostInfoPackList[i].coord_y <<"); [s="<<
-				ghostInfoPackList[i].speed<<"; [d="<< ghostInfoPackList[i].direction << "]; [T=" << ghostInfoPackList[i].ghostType<<"]" << endl;
+			cout << "g[" << i << "]: (" << ghostInfoPackList[i].coord_x << ", " << ghostInfoPackList[i].coord_y << "); [s=" <<
+				ghostInfoPackList[i].speed << "; [d=" << ghostInfoPackList[i].direction << "]; [T=" << ghostInfoPackList[i].ghostType << "]" << endl;
 		}
 		cout << "-----------------------------------------" << endl;
 		int randNumber = rand_nextInt(10);
@@ -123,12 +124,85 @@ int virtualCarUpdate()
 		cout << "-----------------------------------------" << endl;
 		cout << "map[0][9] = " << map[0][9] << endl;
 		cout << "food_list[5][0] = " << food_list[5][0] << endl;
-	}	
+	}
 	//}---------------------------------------------------------------
-	
+
 	return 1;
 }
 //}=============================================================
+
+
+
+// NEW CODE HERE
+void turnLeft() {
+	bool pathDetected = 0;
+	for (int j = 0; j < num_sensors; j++) {
+		if (virtualCarSensorStates[j] == 0) {
+			pathDetected = 1;
+		}
+	}
+
+	turnTimer.resetTimer();
+	while (turnTimer.getTimer() < 0.5) {
+		float halfTiltRange = (num_sensors - 1.0) / 2.0;
+		float tiltSum = 0.0;
+		for (int i = 0; i < halfTiltRange; i++) {
+			if (virtualCarSensorStates[i] == 0) {
+				float tilt = (float)i - halfTiltRange;
+				tiltSum += tilt;
+			}
+		}
+		setVirtualCarSpeed(virtualCarLinearSpeed_seed, virtualCarAngularSpeed_seed * tiltSum);
+	}
+	if (pathDetected == 0) {
+		turnLeftAtSpeed(2);
+	}
+}
+
+void turnRight() {
+	bool pathDetected = 0;
+	for (int j = 0; j < num_sensors; j++) {
+		if (virtualCarSensorStates[j] == 0) {
+			pathDetected = 1;
+		}
+	}
+
+	turnTimer.resetTimer();
+	while (turnTimer.getTimer() < 0.5) {
+		float halfTiltRange = (num_sensors - 1.0) / 2.0;
+		float tiltSum = 0.0;
+		for (int i = halfTiltRange + 2; i < num_sensors; i++) {
+			if (virtualCarSensorStates[i] == 0) {
+				float tilt = (float)i - halfTiltRange;
+				tiltSum += tilt;
+			}
+		}
+		setVirtualCarSpeed(virtualCarLinearSpeed_seed, virtualCarAngularSpeed_seed * tiltSum);
+	}
+	if (pathDetected == 0) {
+		turnRightAtSpeed(2);
+	}
+}
+
+void turnLeftAtSpeed(int speedInput) {
+	speedInput = -speedInput;
+	setVirtualCarSpeed(virtualCarLinearSpeed_seed, virtualCarAngularSpeed_seed * speedInput);
+}
+
+void turnRightAtSpeed(int speedInput) {
+	setVirtualCarSpeed(virtualCarLinearSpeed_seed, virtualCarAngularSpeed_seed * speedInput);
+}
+
+void turnLeftOnSpot(int speedInput) {
+	speedInput = -speedInput;
+	setVirtualCarSpeed(0, virtualCarAngularSpeed_seed * speedInput);
+}
+
+void turnRightOnSpot(int speedInput) {
+	setVirtualCarSpeed(0, virtualCarAngularSpeed_seed * speedInput);
+}
+
+
 
 int main(int argc, char** argv)
 {
