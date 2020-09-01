@@ -3,9 +3,9 @@
 [robotMarkerExt] = 70
 [checkFoodExt] = 80
 [checkGhostExt] = 80
-[numRandomGhosts] = 1
-[numAStarGhosts] = 1
-[numSwingGhosts] = 1
+[numRandomGhosts] = 0
+[numAStarGhosts] = 0
+[numSwingGhosts] = 0
 [ghostCoordPerSecHigh] = 0.5
 [ghostCoordPerSecLow] = 0.2
 [maxPacmanEatGhostTime] = 5
