@@ -131,12 +131,31 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="data.h" />
+    <ClInclude Include="Header.h" />
     <ClInclude Include="highPerformanceTimer.h" />
     <ClInclude Include="mainFungGLAppEngin.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="data.cpp" />
     <ClCompile Include="fungYangCs301SimMain.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="debug.log" />
+    <Text Include="Release\FungYangCs301PacmanUseLib.Build.CppClean.log" />
+    <Text Include="Release\FungYangCs301PacmanUseLib.log" />
+    <Text Include="Release\FungYangCs301PacmanUseLib.vcxproj.FileListAbsolute.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="freeglut.lib" />
+    <Library Include="freeglut_static.lib" />
+    <Library Include="FungYangCs301PacmenRobotSimGameLib.lib" />
+  </ItemGroup>
+  <ItemGroup>
+    <Object Include="Release\data.obj" />
+    <Object Include="Release\fungYangCs301SimMain.obj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Release\FungYangCs301PacmanUseLib.exe.recipe" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

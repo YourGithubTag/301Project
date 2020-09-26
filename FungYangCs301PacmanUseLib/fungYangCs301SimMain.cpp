@@ -33,6 +33,8 @@ int sensorPopulationAlgorithmID;//can set
 float sensorSeparation;//can set
 float num_sensors;//can set
 
+int intersectionmap[15][19];
+
 vector<int> virtualCarSensorStates; //can get
 
 vector<ghostInfoPack> ghostInfoPackList;// can get
@@ -64,6 +66,40 @@ void turnLeftAtSpeed(int speedInput) {
 
 void turnRightAtSpeed(int speedInput) {
 	setVirtualCarSpeed(virtualCarLinearSpeed_seed, virtualCarAngularSpeed_seed * speedInput);
+}
+
+void ConvertToIntersectionMap() {
+	for (int i = 0; i < 15; i++) {
+		for (int j = 0; j < 19; j++) {
+			int paths = 0;
+			if ((i - 1) >= 0) {
+				if (map[i - 1][j] == 0) {
+					paths++;
+				}
+			}
+			if ((j - 1) >= 0) {
+				if (map[i][j - 1] == 0) {
+					paths++;
+				}
+			}
+			if ((i+1) <= 14) {
+				if (map[i + 1][j] == 0) {
+					paths++;
+				}
+			}
+			if ((j + 1 <= 18)) {
+				if (map[i][j + 1] == 0) {
+					paths++;
+				}
+			}
+			if ((paths >= 3) && map[i][j] == 0) {
+				intersectionmap[i][j] = 1;
+			}
+			else {
+				intersectionmap[i][j] = 0;
+			}
+		}
+	}
 }
 
 void turnLeft() {
@@ -141,6 +177,17 @@ int virtualCarInit()
 	currentCarPosCoord_X = 6;
 	currentCarPosCoord_Y = -3;
 	currentCarAngle = 90;
+
+	ConvertToIntersectionMap();
+
+	for (int i = 0; i < 15; ++i)
+	{
+		for (int j = 0; j < 19; ++j)
+		{
+			std::cout << intersectionmap[i][j] << ' ';
+		}
+		std::cout << std::endl;
+	}
 
 	return 1;
 }
@@ -226,6 +273,7 @@ int virtualCarUpdate()
 
 	return 1;
 }
+
 
 
 int main(int argc, char** argv)
