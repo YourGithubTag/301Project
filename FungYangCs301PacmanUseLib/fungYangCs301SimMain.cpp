@@ -59,6 +59,43 @@ float virtualCarAngularSpeed_seed;
 
 /******************** USER DEFINED FUNCTIONS ********************/
 
+// Logic Functions
+void detectIntersection()
+{
+	int leftStrength = 0;
+	// Check left 3 sensors
+	for (int i = 0; i < 3; i++)
+	{
+		// Add a value to left strength corresponding to the sensor, e.g. sensor 0, leftmost sensor, is strength 100, sensor 2 is strength 1
+		if (!virtualCarSensorStates[i])
+		{
+			leftStrength += 10 ^ i;
+		}
+	}
+
+	int rightStrength = 0;
+	// Check right 3 sensors
+	for (int i = 0; i < 3; i++)
+	{
+		// Repeat the same logic but for the right side sensors
+		if (!virtualCarSensorStates[i + 4])
+		{
+			rightStrength += 10 ^ i;
+		}
+	}
+	cout << "Right Strength is " << rightStrength << endl;
+
+	if (myTimer.getTimer() > 1)
+	{
+		myTimer.resetTimer();
+		cout << "Left Strength is " << leftStrength << endl;
+		cout << "Right Strength is " << rightStrength << endl;
+	}
+
+	return;
+}
+
+
 // Data Functions
 
 void ConvertToIntersectionMap() {
@@ -277,8 +314,9 @@ int virtualCarUpdate()
 	*/
 
 	dumbLineFollow();
+	//detectIntersection();
 	statusReport();
-	cin << << endl;
+
 
 	return 1;
 }

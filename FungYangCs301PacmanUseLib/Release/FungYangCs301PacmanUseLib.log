@@ -1,17 +1,16 @@
-﻿  data.cpp
-  fungYangCs301SimMain.cpp
-D:\GitHub\301Project\FungYangCs301PacmanUseLib\fungYangCs301SimMain.cpp(113,21): warning C4018: '<': signed/unsigned mismatch
-D:\GitHub\301Project\FungYangCs301PacmanUseLib\fungYangCs301SimMain.cpp(137,22): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-D:\GitHub\301Project\FungYangCs301PacmanUseLib\fungYangCs301SimMain.cpp(180,23): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-D:\GitHub\301Project\FungYangCs301PacmanUseLib\fungYangCs301SimMain.cpp(205,23): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-D:\GitHub\301Project\FungYangCs301PacmanUseLib\fungYangCs301SimMain.cpp(207,14): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
-D:\GitHub\301Project\FungYangCs301PacmanUseLib\fungYangCs301SimMain.cpp(238,25): warning C4305: '=': truncation from 'double' to 'float'
+﻿  fungYangCs301SimMain.cpp
+D:\GitHub\301Project\FungYangCs301PacmanUseLib\fungYangCs301SimMain.cpp(150,21): warning C4018: '<': signed/unsigned mismatch
+D:\GitHub\301Project\FungYangCs301PacmanUseLib\fungYangCs301SimMain.cpp(174,22): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+D:\GitHub\301Project\FungYangCs301PacmanUseLib\fungYangCs301SimMain.cpp(217,23): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+D:\GitHub\301Project\FungYangCs301PacmanUseLib\fungYangCs301SimMain.cpp(242,23): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+D:\GitHub\301Project\FungYangCs301PacmanUseLib\fungYangCs301SimMain.cpp(244,14): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+D:\GitHub\301Project\FungYangCs301PacmanUseLib\fungYangCs301SimMain.cpp(275,25): warning C4305: '=': truncation from 'double' to 'float'
 Release\data.obj : warning LNK4042: object specified more than once; extras ignored
 Release\fungYangCs301SimMain.obj : warning LNK4042: object specified more than once; extras ignored
   Generating code
-  465 of 932 functions (49.9%) were compiled, the rest were copied from previous compilation.
-    8 functions were new in current compilation
-    91 functions had inline decision re-evaluated but remain unchanged
+  5 of 932 functions ( 0.5%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    4 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
 FungYangCs301PacmenRobotSimGameLib.lib(mazeGen.obj) : warning LNK4099: PDB 'FungYangCs301PacmenRobotSimGameLib.pdb' was not found with 'FungYangCs301PacmenRobotSimGameLib.lib(mazeGen.obj)' or at 'D:\GitHub\301Project\Release\FungYangCs301PacmenRobotSimGameLib.pdb'; linking object as if no debug info
 FungYangCs301PacmenRobotSimGameLib.lib(gameManager.obj) : warning LNK4099: PDB 'FungYangCs301PacmenRobotSimGameLib.pdb' was not found with 'FungYangCs301PacmenRobotSimGameLib.lib(gameManager.obj)' or at 'D:\GitHub\301Project\Release\FungYangCs301PacmenRobotSimGameLib.pdb'; linking object as if no debug info

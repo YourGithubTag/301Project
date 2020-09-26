@@ -1,4 +1,5 @@
 
+.vs/
 *.db
 .vs/FungYangCs301PacmenRobotSimGameLib/v16/.suo
 .vs/FungYangCs301PacmenRobotSimGameLib/v16/.suo
@@ -24,3 +25,11 @@ Release/FungYangCs301PacmanUseLib.exe
 Release/FungYangCs301PacmanUseLib.iobj
 Release/FungYangCs301PacmanUseLib.ipdb
 Release/FungYangCs301PacmanUseLib.pdb
+*.tlog
+*.pdb
+*.ipdb
+*.iobj
+*.exe
+*.obj
+*.db
+.vs/FungYangCs301PacmenRobotSimGameLib/v16/.suo
