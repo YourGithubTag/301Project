@@ -62,35 +62,67 @@ float virtualCarAngularSpeed_seed;
 // Logic Functions
 void detectIntersection()
 {
+	// Value of either 0, 1, 10, or 111 representing the bias to a side
+	int rightStrength = 0;
 	int leftStrength = 0;
-	// Check left 3 sensors
-	for (int i = 0; i < 3; i++)
+	
+	// Bool value to keep track of whether the centre sensor is active
+	bool centered = FALSE;
+
+	// String to represent the sensor states
+	string sensors = "0000000";
+
+	// Check all sensors
+	for (int i = 0; i < 7; i++)
 	{
-		// Add a value to left strength corresponding to the sensor, e.g. sensor 0, leftmost sensor, is strength 100, sensor 2 is strength 1
+		// Store sensor states in a string
 		if (!virtualCarSensorStates[i])
 		{
-			leftStrength += 10 ^ i;
+			sensors[i] = '1';
 		}
 	}
 
-	int rightStrength = 0;
-	// Check right 3 sensors
-	for (int i = 0; i < 3; i++)
+	// Get a strength for each side of the robot
+	if (sensors[0] == '1')
 	{
-		// Repeat the same logic but for the right side sensors
-		if (!virtualCarSensorStates[i + 4])
-		{
-			rightStrength += 10 ^ i;
-		}
+		rightStrength += 100;
 	}
-	cout << "Right Strength is " << rightStrength << endl;
+	if (sensors[1] == '1')
+	{
+		rightStrength += 10;
+	}
+	if (sensors[2] == '1')
+	{
+		rightStrength += 1;
+	}
+	if (sensors[3] == '1')
+	{
+		centered = TRUE;
+	}
+	if (sensors[4] == '1')
+	{
+		leftStrength += 1;
+	}
+	if (sensors[5] == '1')
+	{
+		leftStrength += 10;
+	}
+	if (sensors[6] == '1')
+	{
+		leftStrength += 100;
+	}
 
-	if (myTimer.getTimer() > 1)
+	if (myTimer.getTimer() > 0.1)
 	{
 		myTimer.resetTimer();
+		cout << sensors << endl;
 		cout << "Left Strength is " << leftStrength << endl;
 		cout << "Right Strength is " << rightStrength << endl;
 	}
+
+	// Determine the type of intersection
+
+
 
 	return;
 }
@@ -314,7 +346,7 @@ int virtualCarUpdate()
 	*/
 
 	dumbLineFollow();
-	//detectIntersection();
+	detectIntersection();
 	statusReport();
 
 
