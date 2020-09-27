@@ -57,6 +57,19 @@ void setVirtualCarSpeed(float linearSpeed, float angularSpeed)
 float virtualCarLinearSpeed_seed;
 float virtualCarAngularSpeed_seed;
 
+/******************** USER DEFINED GLOBAL VARIABLES ********************/
+
+// Bool for if the robot is currently dealing with an intersection
+bool intDetected = false;
+// Bool for when the robot has decided what the type of intersection is but is still in the intersection
+bool intDecided = false;
+bool intStatusPrinted = false;
+// Integer for what type of intersection has been detected
+// 0 - no inter, 1 - T from bottom, 2 - T from left, 3 - T from right, 4 - Left Turn, 5 - Right Turn, 6 - Dead end
+int typeOfInt = 0;
+// Bool value to keep track of whether the centre sensor is active
+bool followingLine = true;
+
 /******************** USER DEFINED FUNCTIONS ********************/
 
 // Logic Functions
@@ -65,9 +78,8 @@ void detectIntersection()
 	// Value of either 0, 1, 10, or 111 representing the bias to a side
 	int rightStrength = 0;
 	int leftStrength = 0;
-	
-	// Bool value to keep track of whether the centre sensor is active
-	bool centered = FALSE;
+	// Simply keeps track if the center sensor is active
+	bool centered = false;
 
 	// String to represent the sensor states
 	string sensors = "0000000";
@@ -99,6 +111,10 @@ void detectIntersection()
 	{
 		centered = TRUE;
 	}
+	else
+	{
+		centered = FALSE;
+	}
 	if (sensors[4] == '1')
 	{
 		leftStrength += 1;
@@ -112,17 +128,97 @@ void detectIntersection()
 		leftStrength += 100;
 	}
 
-	if (myTimer.getTimer() > 0.1)
+	// Not inside intersection, looking for intersection
+	if ((intDetected == false) && (intDecided == false))
+	{
+		// Check to see if there is an intersection (either side is greater than 1) that hasn't been found
+		if (((rightStrength > 1) || (leftStrength > 1)) && (centered == true))
+		{
+			intDetected = true;
+			cout << "Intersection Detected." << endl;
+		}
+	}
+	// Inside intersection, type NOT detected
+	else if ((intDetected == true) && (intDecided == false))
+	{
+		// Check for a left turn
+		if ((leftStrength > 10) && (rightStrength > 0) && (centered == TRUE))
+		{
+			cout << "Intersection discovered: Left Turn" << endl;
+			typeOfInt = 4;
+			intDecided = TRUE;
+		}
+		// Check for a right turn
+		else if ((leftStrength > 0) && (rightStrength > 10) && (centered == TRUE))
+		{
+			cout << "Intersection discovered: Right Turn" << endl;
+			typeOfInt = 5;
+			intDecided = TRUE;
+		}
+	}
+	// Inside intersection, redetecting type
+	else if ((intDetected == true) & (intDecided == true))
+	{
+		// Check if we left intersection
+		if ((leftStrength == 0) && (rightStrength == 0) && (centered == TRUE))
+		{
+			cout << "Left intersection" << endl;
+			typeOfInt = 0;
+			intDetected = false;
+			intDecided = false;
+		}
+		// Recheck for entering the bottom of a T intersection
+		else if ((leftStrength == 111) && (rightStrength == 111) && (centered == TRUE))
+		{
+			cout << "Intersection changed: Bottom of T intersection" << endl;
+			typeOfInt = 1;
+		}
+		// Recheck for entering the left of a T intersection
+		else if ((leftStrength == 10) && (rightStrength > 10))
+		{
+			cout << "Intersection changed: Left of T intersection" << endl;
+			typeOfInt = 1;
+		}
+		// Recheck for entering the right of a T intersection
+		else if ((leftStrength > 10) && (rightStrength == 10))
+		{
+			cout << "Intersection changed: Right of T intersection" << endl;
+			typeOfInt = 1;
+		}
+	}
+	// Should never be reached
+	else
+	{
+		cout << "You shouldn't be here." << endl;
+	}
+	
+	// DEBUGGING: for printing some values to console
+	if (myTimer.getTimer() > 0.5)
 	{
 		myTimer.resetTimer();
 		cout << sensors << endl;
-		cout << "Left Strength is " << leftStrength << endl;
-		cout << "Right Strength is " << rightStrength << endl;
+		cout << "Detected = " << intDetected << endl;
+		cout << "Dealt with = " << intDecided << endl;
 	}
 
-	// Determine the type of intersection
 
+	/*
+	// Check for a dead end
+	else if ((rightStrength == 0) && (leftStrength == 0) && (centered == FALSE))
+	{
+		intDetected = TRUE;
+		intDecided = TRUE;
+		cout << "Dead End Detected" << endl;
+		//TODO: Add dead end functionality
+	}
+	// If an intersection has been detected but not decided upon then keep checking
+	if ((intDetected == TRUE) && (intDecided == FALSE) && (intStatusPrinted == FALSE))
+	{
+		
 
+		intStatusPrinted == TRUE;
+	}
+	*/
 
 	return;
 }
