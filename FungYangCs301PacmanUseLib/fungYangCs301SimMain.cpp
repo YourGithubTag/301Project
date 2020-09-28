@@ -227,6 +227,11 @@ void detectIntersection()
 // Data Functions
 
 void ConvertToIntersectionMap() {
+	// Dead ends = 1
+	// Corners = 2
+	// T intersections = 3
+	// + intersections = 4|
+	// Normal path = 0
 	for (int i = 0; i < 15; i++) {
 		for (int j = 0; j < 19; j++) {
 			int paths = 0;
@@ -250,11 +255,56 @@ void ConvertToIntersectionMap() {
 					paths++;
 				}
 			}
-			if ((paths >= 3) && map[i][j] == 0) {
+			if (map[i][j] == 1) {
+				intersectionmap[i][j] = 5;
+			}
+			else if ((paths == 1) && map[i][j] == 0) {
 				intersectionmap[i][j] = 1;
+			}
+			else if ((paths == 3) && map[i][j] == 0) {
+				intersectionmap[i][j] = 3;
+			}
+			else if ((paths == 4) && map[i][j] == 0) {
+				intersectionmap[i][j] = 4;
 			}
 			else {
 				intersectionmap[i][j] = 0;
+			}
+		}
+	}
+	for (int i = 0; i < 15; i++) {
+		for (int j = 0; j < 19; j++) {
+			int paths = 0;
+			if ((i - 1) >= 0) {
+				if (map[i - 1][j] == 0) {
+					if ((j - 1) >= 0) {
+						if (map[i][j - 1] == 0) {
+							paths++;
+						}
+					}
+					if ((j + 1) <= 18) {
+						if (map[i][j + 1] == 0) {
+							paths++;
+						}
+					}
+				}
+			}
+			if ((i + 1) <= 14) {
+				if (map[i + 1][j] == 0) {
+					if ((j - 1) >= 0) {
+						if (map[i][j - 1] == 0) {
+							paths++;
+						}
+					}
+					if ((j + 1) <= 18) {
+						if (map[i][j + 1] == 0) {
+							paths++;
+						}
+					}
+				}
+			}
+			if ((paths == 1) && map[i][j] == 0) {
+				intersectionmap[i][j] = 2;
 			}
 		}
 	}
