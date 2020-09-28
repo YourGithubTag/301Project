@@ -1,3 +1,5 @@
+for  zzc = 1:100 %trying to get 100 cycles to time it longer
+
 % Function descriptions
 % To view a map, given a map file
 startloc = [4,10];
@@ -24,4 +26,4 @@ plotmap(m);
 
 %To view the path determined above use 
 plotmap(m,s);
-
+end
