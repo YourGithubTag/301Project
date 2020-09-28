@@ -61,8 +61,6 @@ float virtualCarAngularSpeed_seed;
 
 // Bool for if the robot is currently dealing with an intersection
 bool intDetected = false;
-// Bool for when the robot has decided what the type of intersection is but is still in the intersection
-bool intDecided = false;
 bool intStatusPrinted = false;
 // Integer for what type of intersection has been detected
 // 0 - no inter, 1 - T from bottom, 2 - T from left, 3 - T from right, 4 - Left Turn, 5 - Right Turn, 6 - Dead end
@@ -128,8 +126,8 @@ void detectIntersection()
 		leftStrength += 100;
 	}
 
-	// Not inside intersection, looking for intersection
-	if ((intDetected == false) && (intDecided == false))
+	// Looking for any type of intersection
+	if (intDetected == false)
 	{
 		// Check to see if there is an intersection (either side is greater than 1) that hasn't been found
 		if (((rightStrength > 1) || (leftStrength > 1)) && (centered == true))
@@ -137,25 +135,41 @@ void detectIntersection()
 			intDetected = true;
 			cout << "Intersection Detected." << endl;
 		}
-	}
-	// Inside intersection, type NOT detected
-	else if ((intDetected == true) && (intDecided == false))
-	{
+
 		// Check for a left turn
 		if ((leftStrength > 10) && (rightStrength > 0) && (centered == TRUE))
 		{
 			cout << "Intersection discovered: Left Turn" << endl;
 			typeOfInt = 4;
-			intDecided = TRUE;
 		}
 		// Check for a right turn
 		else if ((leftStrength > 0) && (rightStrength > 10) && (centered == TRUE))
 		{
 			cout << "Intersection discovered: Right Turn" << endl;
 			typeOfInt = 5;
-			intDecided = TRUE;
 		}
 	}
+	// If intDetected then check if we have left it
+	else if (intDetected == true)
+	{
+		// Check if we left intersection
+		if ((leftStrength == 0) && (rightStrength == 0) && (centered == TRUE))
+		{
+			cout << "Left intersection" << endl;
+			typeOfInt = 0;
+			intDetected = false;
+		}
+	}
+
+	// DEBUGGING: for printing some values to console
+	if (myTimer.getTimer() > 0.5)
+	{
+		myTimer.resetTimer();
+		cout << sensors << endl;
+		cout << "Detected = " << intDetected << endl;
+	}
+
+	/*
 	// Inside intersection, redetecting type
 	else if ((intDetected == true) & (intDecided == true))
 	{
@@ -192,17 +206,10 @@ void detectIntersection()
 		cout << "You shouldn't be here." << endl;
 	}
 	
-	// DEBUGGING: for printing some values to console
-	if (myTimer.getTimer() > 0.5)
-	{
-		myTimer.resetTimer();
-		cout << sensors << endl;
-		cout << "Detected = " << intDetected << endl;
-		cout << "Dealt with = " << intDecided << endl;
-	}
+	
 
 
-	/*
+	
 	// Check for a dead end
 	else if ((rightStrength == 0) && (leftStrength == 0) && (centered == FALSE))
 	{
@@ -210,13 +217,6 @@ void detectIntersection()
 		intDecided = TRUE;
 		cout << "Dead End Detected" << endl;
 		//TODO: Add dead end functionality
-	}
-	// If an intersection has been detected but not decided upon then keep checking
-	if ((intDetected == TRUE) && (intDecided == FALSE) && (intStatusPrinted == FALSE))
-	{
-		
-
-		intStatusPrinted == TRUE;
 	}
 	*/
 
@@ -258,6 +258,18 @@ void ConvertToIntersectionMap() {
 			}
 		}
 	}
+}
+
+void findMapCorners()
+{
+	// Finds the most top left, top right, bottom left, and bottom right corners of the map
+	// Start with top left
+	int row, col;
+	for (row = 0; row < 10; row++)
+	{
+	}
+
+
 }
 
 void statusReport()
@@ -332,32 +344,15 @@ void turnRightAtSpeed(int speedInput) {
 	setVirtualCarSpeed(virtualCarLinearSpeed_seed, virtualCarAngularSpeed_seed * speedInput);
 }
 
-void turnLeft() {
-	bool pathDetected = 0;
-	for (int j = 0; j < num_sensors; j++) {
-		if (virtualCarSensorStates[j] == 0) {
-			pathDetected = 1;
-		}
-	}
-
-	turnTimer.resetTimer();
-	while (turnTimer.getTimer() < 0.5) {
-		float halfTiltRange = (num_sensors - 1.0) / 2.0;
-		float tiltSum = 0.0;
-		for (int i = 0; i < halfTiltRange; i++) {
-			if (virtualCarSensorStates[i] == 0) {
-				float tilt = (float)i - halfTiltRange;
-				tiltSum += tilt;
-			}
-		}
-		setVirtualCarSpeed(virtualCarLinearSpeed_seed, virtualCarAngularSpeed_seed * tiltSum);
-	}
-	if (pathDetected == 0) {
-		turnLeftAtSpeed(2);
-	}
+void turnLeft90()
+{
+	
+	
+	setVirtualCarSpeed(virtualCarLinearSpeed_seed * 0, virtualCarAngularSpeed_seed);
+	
 }
 
-void turnRight() {
+void turnRight90() {
 	bool pathDetected = 0;
 	for (int j = 0; j < num_sensors; j++) {
 		if (virtualCarSensorStates[j] == 0) {
@@ -402,8 +397,8 @@ int virtualCarInit()
 	num_sensors = 7;
 	sensorSeparation = 0.08;
 
-	virtualCarLinearSpeed_seed = 0.5;
-	virtualCarAngularSpeed_seed = 40;
+	virtualCarLinearSpeed_seed = 0.4;
+	virtualCarAngularSpeed_seed = 50;
 	currentCarPosCoord_X = 6;
 	currentCarPosCoord_Y = -3;
 	currentCarAngle = 90;
