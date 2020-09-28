@@ -66,14 +66,26 @@ float virtualCarAngularSpeed_seed;
 
 // Bool for if the robot is currently dealing with an intersection
 bool intDetected = false;
-// Bool for when the robot has decided what the type of intersection is but is still in the intersection
-bool intDecided = false;
 bool intStatusPrinted = false;
 // Integer for what type of intersection has been detected
 // 0 - no inter, 1 - T from bottom, 2 - T from left, 3 - T from right, 4 - Left Turn, 5 - Right Turn, 6 - Dead end
 int typeOfInt = 0;
 // Bool value to keep track of whether the centre sensor is active
 bool followingLine = true;
+// Target angle if the car is turning
+int targetAngle = 0;
+// Bool flag to check if the car is currently turning
+bool turning = false;
+
+// Variables to store the corners of the map
+int topLeftRow = 99;
+int topLeftCol = 99;
+int topRightRow = 99;
+int topRightCol = 99;
+int botLeftRow = 99;
+int botLeftCol = 99;
+int botRightRow = 99;
+int botRightCol = 99;
 
 /******************** USER DEFINED FUNCTIONS ********************/
 
@@ -133,8 +145,8 @@ void detectIntersection()
 		leftStrength += 100;
 	}
 
-	// Not inside intersection, looking for intersection
-	if ((intDetected == false) && (intDecided == false))
+	// Looking for any type of intersection
+	if (intDetected == false)
 	{
 		// Check to see if there is an intersection (either side is greater than 1) that hasn't been found
 		if (((rightStrength > 1) || (leftStrength > 1)) && (centered == true))
@@ -142,25 +154,41 @@ void detectIntersection()
 			intDetected = true;
 			cout << "Intersection Detected." << endl;
 		}
-	}
-	// Inside intersection, type NOT detected
-	else if ((intDetected == true) && (intDecided == false))
-	{
+
 		// Check for a left turn
 		if ((leftStrength > 10) && (rightStrength > 0) && (centered == TRUE))
 		{
 			cout << "Intersection discovered: Left Turn" << endl;
 			typeOfInt = 4;
-			intDecided = TRUE;
 		}
 		// Check for a right turn
 		else if ((leftStrength > 0) && (rightStrength > 10) && (centered == TRUE))
 		{
 			cout << "Intersection discovered: Right Turn" << endl;
 			typeOfInt = 5;
-			intDecided = TRUE;
 		}
 	}
+	// If intDetected then check if we have left it
+	else if (intDetected == true)
+	{
+		// Check if we left intersection
+		if ((leftStrength == 0) && (rightStrength == 0) && (centered == TRUE))
+		{
+			cout << "Left intersection" << endl;
+			typeOfInt = 0;
+			intDetected = false;
+		}
+	}
+
+	// DEBUGGING: for printing some values to console
+	if (myTimer.getTimer() > 0.5)
+	{
+		myTimer.resetTimer();
+		cout << sensors << endl;
+		cout << "Detected = " << intDetected << endl;
+	}
+
+	/*
 	// Inside intersection, redetecting type
 	else if ((intDetected == true) & (intDecided == true))
 	{
@@ -197,17 +225,10 @@ void detectIntersection()
 		cout << "You shouldn't be here." << endl;
 	}
 	
-	// DEBUGGING: for printing some values to console
-	if (myTimer.getTimer() > 0.5)
-	{
-		myTimer.resetTimer();
-		cout << sensors << endl;
-		cout << "Detected = " << intDetected << endl;
-		cout << "Dealt with = " << intDecided << endl;
-	}
+	
 
 
-	/*
+	
 	// Check for a dead end
 	else if ((rightStrength == 0) && (leftStrength == 0) && (centered == FALSE))
 	{
@@ -215,13 +236,6 @@ void detectIntersection()
 		intDecided = TRUE;
 		cout << "Dead End Detected" << endl;
 		//TODO: Add dead end functionality
-	}
-	// If an intersection has been detected but not decided upon then keep checking
-	if ((intDetected == TRUE) && (intDecided == FALSE) && (intStatusPrinted == FALSE))
-	{
-		
-
-		intStatusPrinted == TRUE;
 	}
 	*/
 
@@ -274,7 +288,6 @@ void FollowInstructions() {
 
 
 // Data Functions
-
 void ConvertToIntersectionMap() {
 	// Dead ends = 1
 	// Corners = 2
@@ -359,6 +372,132 @@ void ConvertToIntersectionMap() {
 	}
 }
 
+void findMapCorners()
+{
+	// Finds the most top left, top right, bottom left, and bottom right corners of the map
+
+	// Start with top left
+	int row, col;
+	bool found = false;
+	for (row = 0; row < 7; row++)
+	{
+		for (col = 0; col < 10; col++)
+		{
+			if (map[row][col] == 0)
+			{
+				topLeftRow = row;
+				topLeftCol = col;
+				found = true;
+				break;
+			}
+		}
+		// If no corner found then default to 6,9
+		if ((row == 6) && (topLeftRow == 99) && (topLeftCol == 99))
+		{
+			topLeftRow = 6;
+			topLeftCol = 9;
+		}
+
+		// Break out if it has been found
+		if (found == true)
+		{
+			break;
+		}
+	}
+
+	found = false;
+	// Top right
+	for (row = 0; row < 7; row++)
+	{
+		for (col = 18; col > 9; col--)
+		{
+			if (map[row][col] == 0)
+			{
+				topRightRow = row;
+				topRightCol = col;
+				found = true;
+				break;
+			}
+		}
+
+		// If no corner found then default to 6,10
+		if ((row == 6) && (topRightRow == 99) && (topRightCol == 99))
+		{
+			topRightRow = 6;
+			topRightCol = 10;
+		}
+
+		// Break out if it has been found
+		if (found == true)
+		{
+			break;
+		}
+	}
+
+	found = false;
+	// Bottom Left
+	for (row = 14; row > 6; row--)
+	{
+		for (col = 0; col < 10; col++)
+		{
+			if (map[row][col] == 0)
+			{
+				botLeftRow = row;
+				botLeftCol = col;
+				found = true;
+				break;
+			}
+		}
+		// If no corner found then default to 7,9
+		if ((row == 7) && (botLeftRow == 99) && (botLeftCol == 99))
+		{
+			botLeftRow = 7;
+			botLeftCol = 9;
+		}
+
+		// Break out if it has been found
+		if (found == true)
+		{
+			break;
+		}
+	}
+
+	found = false;
+	// Bottom right
+	for (row = 14; row > 6; row--)
+	{
+		for (col = 18; col > 9; col--)
+		{
+			if (map[row][col] == 0)
+			{
+				botRightRow = row;
+				botRightCol = col;
+				found = true;
+				break;
+			}
+		}
+
+		// If no corner found then default to 7,10
+		if ((row == 7) && (botRightRow == 99) && (botRightCol == 99))
+		{
+			botRightRow = 7;
+			botRightCol = 10;
+		}
+
+		// Break out if it has been found
+		if (found == true)
+		{
+			break;
+		}
+	}
+
+	cout << "Top left is " << topLeftRow << ", " << topLeftCol << endl;
+	cout << "Top right is " << topRightRow << ", " << topRightCol << endl;
+	cout << "Bottom left is " << botLeftRow << ", " << botLeftCol << endl;
+	cout << "Bottom right is " << botRightRow << ", " << botRightCol << endl;
+	return;
+}
+
 void statusReport()
 {
 	// Prints a status report to the console every tick, taken from the default code provided
@@ -431,32 +570,14 @@ void turnRightAtSpeed(int speedInput) {
 	setVirtualCarSpeed(virtualCarLinearSpeed_seed, virtualCarAngularSpeed_seed * speedInput);
 }
 
-void turnLeft() {
-	bool pathDetected = 0;
-	for (int j = 0; j < num_sensors; j++) {
-		if (virtualCarSensorStates[j] == 0) {
-			pathDetected = 1;
-		}
-	}
-
-	turnTimer.resetTimer();
-	while (turnTimer.getTimer() < 0.5) {
-		float halfTiltRange = (num_sensors - 1.0) / 2.0;
-		float tiltSum = 0.0;
-		for (int i = 0; i < halfTiltRange; i++) {
-			if (virtualCarSensorStates[i] == 0) {
-				float tilt = (float)i - halfTiltRange;
-				tiltSum += tilt;
-			}
-		}
-		setVirtualCarSpeed(virtualCarLinearSpeed_seed, virtualCarAngularSpeed_seed * tiltSum);
-	}
-	if (pathDetected == 0) {
-		turnLeftAtSpeed(2);
-	}
+void turnLeft90()
+{
+	currentCarAngle = 0;
+	
+	//setVirtualCarSpeed(virtualCarLinearSpeed_seed * 0, virtualCarAngularSpeed_seed);
 }
 
-void turnRight() {
+void turnRight90() {
 	bool pathDetected = 0;
 	for (int j = 0; j < num_sensors; j++) {
 		if (virtualCarSensorStates[j] == 0) {
@@ -481,9 +602,34 @@ void turnRight() {
 	}
 }
 
-void turnLeftOnSpot(int speedInput) {
-	speedInput = -speedInput;
-	setVirtualCarSpeed(0, virtualCarAngularSpeed_seed * speedInput);
+void turnLeft90OnSpot() {
+	// Let other code know the car is currently turning
+	if (turning == false)
+	{
+		turning = true;
+		if (currentCarAngle > 270)
+		{
+			targetAngle = (currentCarAngle - 270);
+		}
+		else
+		{
+			targetAngle = currentCarAngle + 90;
+		}
+	}
+	else
+	{
+		if ((currentCarAngle < (targetAngle + 5)) && (currentCarAngle > (targetAngle - 5)))
+		{
+			turning = false;
+			targetAngle = 0;
+		}
+		else
+		{
+			setVirtualCarSpeed(virtualCarLinearSpeed_seed * 0, virtualCarAngularSpeed_seed);
+		}
+		cout << "Current car angle is " << currentCarAngle << endl;
+		cout << "Target car angle is " << targetAngle << endl;
+	}
 }
 
 void turnRightOnSpot(int speedInput) {
@@ -501,8 +647,8 @@ int virtualCarInit()
 	num_sensors = 7;
 	sensorSeparation = 0.08;
 
-	virtualCarLinearSpeed_seed = 0.5;
-	virtualCarAngularSpeed_seed = 40;
+	virtualCarLinearSpeed_seed = 0.4;
+	virtualCarAngularSpeed_seed = 50;
 	currentCarPosCoord_X = 6;
 	currentCarPosCoord_Y = -3;
 	currentCarAngle = 90;
@@ -518,6 +664,9 @@ int virtualCarInit()
 		}
 		std::cout << std::endl;
 	}
+
+	// Find corners of the given map
+	findMapCorners();
 
 	return 1;
 }
@@ -541,10 +690,24 @@ int virtualCarUpdate()
 	* 5. When do we call director and algo?
 	*/
 
-	dumbLineFollow();
-	detectIntersection();
+	//dumbLineFollow();
+	//detectIntersection();
 	statusReport();
 
+	
+
+	/*
+	if (myTimer.getTimer() > 0.5)
+	{
+		myTimer.resetTimer();
+		
+		turnLeft90OnSpot();
+	}
+	*/
+	
+	
+	
+	
 
 	return 1;
 }
