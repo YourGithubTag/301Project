@@ -33,12 +33,14 @@ int sensorPopulationAlgorithmID;//can set
 float sensorSeparation;//can set
 float num_sensors;//can set
 
+// Map contains information on each node and its type
 int intersectionmap[15][19];
 
-struct coord {
+// Custom coordinate data structure
+typedef struct {
 	int x;
 	int y;
-};
+} Coordinate;
 
 vector<int> virtualCarSensorStates; //can get
 
@@ -78,16 +80,9 @@ int targetAngle = 0;
 bool turning = false;
 
 // Variables to store the corners of the map
-int topLeftRow = 99;
-int topLeftCol = 99;
-int topRightRow = 99;
-int topRightCol = 99;
-int botLeftRow = 99;
-int botLeftCol = 99;
-int botRightRow = 99;
-int botRightCol = 99;
+Coordinate topLeft, topRight, botLeft, botRight;
 
-/******************** USER DEFINED FUNCTIONS ********************/
+/******************* USER DEFINED FUNCTIONS ********************/
 
 // Logic Functions
 void detectIntersection()
@@ -375,6 +370,15 @@ void ConvertToIntersectionMap() {
 void findMapCorners()
 {
 	// Finds the most top left, top right, bottom left, and bottom right corners of the map
+	topLeft.x = 99;
+	topLeft.y = 99;
+	topRight.x = 99;
+	topRight.y = 99;
+	botLeft.x = 99;
+	botLeft.y = 99;
+	botRight.x = 99;
+	botRight.y = 99;
+
 
 	// Start with top left
 	int row, col;
@@ -385,17 +389,17 @@ void findMapCorners()
 		{
 			if (map[row][col] == 0)
 			{
-				topLeftRow = row;
-				topLeftCol = col;
+				topLeft.x = row;
+				topLeft.y = col;
 				found = true;
 				break;
 			}
 		}
 		// If no corner found then default to 6,9
-		if ((row == 6) && (topLeftRow == 99) && (topLeftCol == 99))
+		if ((row == 6) && (topLeft.x == 99) && (topLeft.y == 99))
 		{
-			topLeftRow = 6;
-			topLeftCol = 9;
+			topLeft.x = 6;
+			topLeft.y = 9;
 		}
 
 		// Break out if it has been found
@@ -413,18 +417,18 @@ void findMapCorners()
 		{
 			if (map[row][col] == 0)
 			{
-				topRightRow = row;
-				topRightCol = col;
+				topRight.x = row;
+				topRight.y = col;
 				found = true;
 				break;
 			}
 		}
 
 		// If no corner found then default to 6,10
-		if ((row == 6) && (topRightRow == 99) && (topRightCol == 99))
+		if ((row == 6) && (topRight.x == 99) && (topRight.y == 99))
 		{
-			topRightRow = 6;
-			topRightCol = 10;
+			topRight.x = 6;
+			topRight.y = 10;
 		}
 
 		// Break out if it has been found
@@ -442,17 +446,17 @@ void findMapCorners()
 		{
 			if (map[row][col] == 0)
 			{
-				botLeftRow = row;
-				botLeftCol = col;
+				botLeft.x = row;
+				botLeft.y = col;
 				found = true;
 				break;
 			}
 		}
 		// If no corner found then default to 7,9
-		if ((row == 7) && (botLeftRow == 99) && (botLeftCol == 99))
+		if ((row == 7) && (botLeft.x == 99) && (botLeft.y == 99))
 		{
-			botLeftRow = 7;
-			botLeftCol = 9;
+			botLeft.x = 7;
+			botLeft.y = 9;
 		}
 
 		// Break out if it has been found
@@ -470,18 +474,18 @@ void findMapCorners()
 		{
 			if (map[row][col] == 0)
 			{
-				botRightRow = row;
-				botRightCol = col;
+				botRight.x = row;
+				botRight.y = col;
 				found = true;
 				break;
 			}
 		}
 
 		// If no corner found then default to 7,10
-		if ((row == 7) && (botRightRow == 99) && (botRightCol == 99))
+		if ((row == 7) && (botRight.x == 99) && (botRight.y == 99))
 		{
-			botRightRow = 7;
-			botRightCol = 10;
+			botRight.x = 7;
+			botRight.y = 10;
 		}
 
 		// Break out if it has been found
@@ -491,10 +495,10 @@ void findMapCorners()
 		}
 	}
 
-	cout << "Top left is " << topLeftRow << ", " << topLeftCol << endl;
-	cout << "Top right is " << topRightRow << ", " << topRightCol << endl;
-	cout << "Bottom left is " << botLeftRow << ", " << botLeftCol << endl;
-	cout << "Bottom right is " << botRightRow << ", " << botRightCol << endl;
+	cout << "Top left is " << topLeft.x << ", " << topLeft.y << endl;
+	cout << "Top right is " << topRight.x << ", " << topRight.y << endl;
+	cout << "Bottom left is " << botLeft.x << ", " << botLeft.y << endl;
+	cout << "Bottom right is " << botRight.x << ", " << botRight.y << endl;
 	return;
 }
 
