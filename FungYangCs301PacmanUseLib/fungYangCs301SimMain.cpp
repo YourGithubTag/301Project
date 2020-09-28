@@ -35,6 +35,11 @@ float num_sensors;//can set
 
 int intersectionmap[15][19];
 
+struct coord {
+	int x;
+	int y;
+};
+
 vector<int> virtualCarSensorStates; //can get
 
 vector<ghostInfoPack> ghostInfoPackList;// can get
@@ -221,6 +226,50 @@ void detectIntersection()
 	*/
 
 	return;
+}
+
+
+void FollowInstructions() {
+	//Assumptions about functionality of other functions are made
+	// Declaring array of instructions 
+	vector<coord> instructions;
+	instructions[0].x = 3;
+	instructions[0].y = 3;
+	instructions[1].x = 3;
+	instructions[1].y = 3;
+
+	
+	// CURRENT DIRECTION, NOTE THAT 1 = going right, 2 = going up, 3 = going left, 4 = going down
+	int direction = 0;
+	coord prevlocation;
+	coord currlocation;
+	coord nextlocation;
+
+	nextlocation.x = 1;
+	nextlocation.y = 1;
+
+	direction = currentCarAngle / 90;
+	if (direction == 0) {
+		direction = 4;
+	}
+
+	// Loop through every set of coordinates (every instruction)
+	for (int i = 0; i < instructions.size(); i++) {
+		if ((nextlocation.x != 0) || (nextlocation.y != 0)) {
+			if (direction == 1) {
+				cout << "Hello, I am here 1" << endl;
+			}
+			if (direction == 2) {
+				cout << "Hello, I am here 2" << endl;
+			}
+			if (direction == 3) {
+				cout << "Hello, I am here 3" << endl;
+			}
+			if (direction == 4) {
+				cout << "Hello, I am here 4" << endl;
+			}
+		}
+	}
 }
 
 
@@ -459,6 +508,7 @@ int virtualCarInit()
 	currentCarAngle = 90;
 
 	ConvertToIntersectionMap();
+	FollowInstructions();
 
 	for (int i = 0; i < 15; ++i)
 	{
