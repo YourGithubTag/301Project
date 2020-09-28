@@ -42,6 +42,9 @@ typedef struct {
 	int y;
 } Coordinate;
 
+// Custom command data typedef
+enum Command {TurnLeft, TurnRight, GoStraight, Turn180, Halt};
+
 vector<int> virtualCarSensorStates; //can get
 
 vector<ghostInfoPack> ghostInfoPackList;// can get
@@ -58,7 +61,7 @@ void setVirtualCarSpeed(float linearSpeed, float angularSpeed)
 	virtualCarAngularSpeed = angularSpeed;
 }
 
-//The Only TWO unctions Students need to modify to add their own sensor guided
+//The Only TWO functions Students need to modify to add their own sensor guided
 //path following control and Map path search calculations.
 //{=================================================
 float virtualCarLinearSpeed_seed;
@@ -236,7 +239,6 @@ void detectIntersection()
 
 	return;
 }
-
 
 void FollowInstructions() {
 	//Assumptions about functionality of other functions are made
@@ -565,81 +567,19 @@ void dumbLineFollow()
 	}
 }
 
-void turnLeftAtSpeed(int speedInput) {
-	speedInput = -speedInput;
-	setVirtualCarSpeed(virtualCarLinearSpeed_seed, virtualCarAngularSpeed_seed * speedInput);
-}
-
-void turnRightAtSpeed(int speedInput) {
-	setVirtualCarSpeed(virtualCarLinearSpeed_seed, virtualCarAngularSpeed_seed * speedInput);
-}
-
-void turnLeft90()
+void turnLeft()
 {
-	currentCarAngle = 0;
-	
-	//setVirtualCarSpeed(virtualCarLinearSpeed_seed * 0, virtualCarAngularSpeed_seed);
+	setVirtualCarSpeed(virtualCarLinearSpeed_seed * .1, virtualCarAngularSpeed_seed);
 }
 
-void turnRight90() {
-	bool pathDetected = 0;
-	for (int j = 0; j < num_sensors; j++) {
-		if (virtualCarSensorStates[j] == 0) {
-			pathDetected = 1;
-		}
-	}
-
-	turnTimer.resetTimer();
-	while (turnTimer.getTimer() < 0.5) {
-		float halfTiltRange = (num_sensors - 1.0) / 2.0;
-		float tiltSum = 0.0;
-		for (int i = halfTiltRange + 2; i < num_sensors; i++) {
-			if (virtualCarSensorStates[i] == 0) {
-				float tilt = (float)i - halfTiltRange;
-				tiltSum += tilt;
-			}
-		}
-		setVirtualCarSpeed(virtualCarLinearSpeed_seed, virtualCarAngularSpeed_seed * tiltSum);
-	}
-	if (pathDetected == 0) {
-		turnRightAtSpeed(2);
-	}
+void turnRight() {
+	setVirtualCarSpeed(virtualCarLinearSpeed_seed * .1, -virtualCarAngularSpeed_seed);
 }
 
-void turnLeft90OnSpot() {
-	// Let other code know the car is currently turning
-	if (turning == false)
-	{
-		turning = true;
-		if (currentCarAngle > 270)
-		{
-			targetAngle = (currentCarAngle - 270);
-		}
-		else
-		{
-			targetAngle = currentCarAngle + 90;
-		}
-	}
-	else
-	{
-		if ((currentCarAngle < (targetAngle + 5)) && (currentCarAngle > (targetAngle - 5)))
-		{
-			turning = false;
-			targetAngle = 0;
-		}
-		else
-		{
-			setVirtualCarSpeed(virtualCarLinearSpeed_seed * 0, virtualCarAngularSpeed_seed);
-		}
-		cout << "Current car angle is " << currentCarAngle << endl;
-		cout << "Target car angle is " << targetAngle << endl;
-	}
+void goStraight()
+{
+	setVirtualCarSpeed(virtualCarLinearSpeed_seed, 0);
 }
-
-void turnRightOnSpot(int speedInput) {
-	setVirtualCarSpeed(0, virtualCarAngularSpeed_seed * speedInput);
-}
-
 
 
 /******************** CORE FUNCTIONS ********************/
@@ -657,9 +597,22 @@ int virtualCarInit()
 	currentCarPosCoord_Y = -3;
 	currentCarAngle = 90;
 
+
+	// All our initialisation code is here on out
+
+	// Find corners of the given map
+	findMapCorners();
+
+	// Find all intersections, dead ends, turns, and crosses in the given map
 	ConvertToIntersectionMap();
+
+	// Call the shortest path algorithm between the four corners of the map
+	//TODO
+
+	// Convert algorithm output to robot instructions
 	FollowInstructions();
 
+	// Print out the map containing intersections
 	for (int i = 0; i < 15; ++i)
 	{
 		for (int j = 0; j < 19; ++j)
@@ -668,9 +621,6 @@ int virtualCarInit()
 		}
 		std::cout << std::endl;
 	}
-
-	// Find corners of the given map
-	findMapCorners();
 
 	return 1;
 }
@@ -698,7 +648,7 @@ int virtualCarUpdate()
 	//detectIntersection();
 	statusReport();
 
-	
+	turnLeft();
 
 	/*
 	if (myTimer.getTimer() > 0.5)
