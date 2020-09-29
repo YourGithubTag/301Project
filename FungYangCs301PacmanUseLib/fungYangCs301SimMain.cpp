@@ -835,12 +835,12 @@ int virtualCarUpdate()
 
 
 //This function runs every tick, gets the currentCarCoord and then converts to Cell.
-void ConvertToIntersecMap() 
+void ConvertToVisitedMap() 
 {
-	//A NEW Map recording the positions that the Car has been to
+	//A NEW Map (15x19) recording the positions that the Car has been to
 	int visited[15][19];
 
-	//visited map is initialised with all Zeros
+	//visited map (15x19) is initialised with all Zeros
 	for (int i = 0; i < 15; i++) {
 		for (int j = 0; j < 19; j++) {
 			visited[i][j] = 0;
@@ -858,7 +858,7 @@ void ConvertToIntersecMap()
 		//Convert Y-coord into Cell-Y
 		int Cell_Y = coordToCellY(currentCarPosCoord_Y);
 
-		//Set corresponding visited map to 1, representing it's visited
+		//Set visited positions to be 1
 		visited[Cell_X][Cell_Y] = 1;
 
 	}
