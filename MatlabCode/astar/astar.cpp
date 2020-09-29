@@ -7,6 +7,7 @@ using namespace std;
 
 // Creating a shortcut for int, int pair type 
 typedef pair<int, int> Pair; 
+typedef vector<Pair> coordinateList;
 
 // Creating a shortcut for pair<int, pair<int, int>> type 
 typedef pair<double, pair<int, int>> pPair; 
@@ -79,11 +80,12 @@ void tracePath(cell cellDetails[][COL], Pair dest)
 		row = temp_row; 
 		col = temp_col; 
 	} 
-
+	coordinateList c;
 	Path.push (make_pair (row, col)); 
 	while (!Path.empty()) 
 	{ 
 		pair<int,int> p = Path.top(); 
+		c.coordinateList.push_back(p);
 		Path.pop(); 
 		printf("-> (%d,%d) ",p.first,p.second); 
 	} 
@@ -96,6 +98,7 @@ void tracePath(cell cellDetails[][COL], Pair dest)
 // to A* Search Algorithm 
 void aStarSearch(int grid[][COL], Pair src, Pair dest) 
 { 
+	coordinateList toReturn;
 	// If the source is out of range 
 	if (isValid (src.first, src.second) == false) 
 	{ 
