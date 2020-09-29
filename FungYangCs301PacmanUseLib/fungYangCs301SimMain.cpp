@@ -499,6 +499,7 @@ enum Command { TurnLeft, TurnRight, GoStraight, Turn180, Halt };
 
 //List of commands for robot
 vector<Command> CommandList;
+int CommandListIndex;
 
 //vector<Pair> CoordinateList;
 
@@ -1162,6 +1163,37 @@ void goStraight()
 }
 
 
+
+void RobotControl() {
+	Command current = CommandList.at(CommandListIndex);
+
+	switch (current) {
+		case TurnLeft:
+			break;
+
+		case TurnRight:
+			break;
+
+		case GoStraight:
+			break;
+
+		case Turn180:
+			break;
+
+			//TODO: HALT STUFF
+		case Halt:
+			break;
+
+	}
+
+
+
+
+}
+
+
+
+
 /******************** CORE FUNCTIONS ********************/
 
 int virtualCarInit()
@@ -1179,6 +1211,8 @@ int virtualCarInit()
 
 
 	// All our initialisation code is here on out
+
+	CommandListIndex = 0;
 
 	// Get the level from the user
 	cout << "Enter desired level\n0 -> Debug Mode\n1 -> Level 1 Logic\n2 -> Level 2 Logic" << endl;
@@ -1199,7 +1233,7 @@ int virtualCarInit()
 	aStarSearch(invertedMap, src, dest);
 
 	// Convert algorithm output to robot instructions
-	//FollowInstructions();
+	// FollowInstructions();
 
 	// Print out the map containing intersections
 	for (int i = 0; i < 15; ++i)
@@ -1248,6 +1282,7 @@ int virtualCarUpdate()
 	// Level 1
 	else if (level == 1)
 	{
+
 
 	}
 
