@@ -36,24 +36,6 @@ int sensorPopulationAlgorithmID;//can set
 float sensorSeparation;//can set
 float num_sensors;//can set
 
-<<<<<<< Updated upstream
-=======
-// Map contains information on each node and its type
-int intersectionmap[15][19];
-
-// Custom coordinate data structure
-typedef struct {
-	int first;
-	int second;
-} Coordinate;
-
-// Custom command data typedef
-enum Command {TurnLeft, TurnRight, GoStraight, Turn180, Halt};
-
-//List of commands for robot
-vector<Command> CommandList;
-
->>>>>>> Stashed changes
 vector<int> virtualCarSensorStates; //can get
 
 vector<ghostInfoPack> ghostInfoPackList;// can get
@@ -80,16 +62,19 @@ float virtualCarAngularSpeed_seed;
 
 /*********************** OUR GLOBAL VARIABLES & DATATYPES ***********************/
 
-//// Custom coordinate data structure
+//// Custom Pair data structure
 //typedef struct {
 //	int x;
 //	int y;
-//} Coordinate;
+//} Pair;
 
 // Custom command data typedef
 enum Command { TurnLeft, TurnRight, GoStraight, Turn180, Halt };
 
-// Stores the algorithm output of a vector of coordinates
+//List of commands for robot
+vector<Command> CommandList;
+
+// Stores the algorithm output of a vector of Pairs
 vector<Pair> algoOut;
 
 // Map contains information on each node and its type
@@ -276,63 +261,12 @@ void detectIntersection()
 	return;
 }
 
-<<<<<<< Updated upstream
-//void FollowInstructions() {
-//	//Assumptions about functionality of other functions are made
-//	// Declaring array of instructions 
-//	int startingCarAngle = 0;
-//	vector<Coordinate> instructions;
-//	Coordinate one;
-//	Coordinate two;
-//	one.x = 10;
-//	one.y = 5;
-//	two.x = 4;
-//	two.y = 5;
-//
-//	instructions.push_back(one);
-//	instructions.push_back(two);
-//	
-//	// CURRENT DIRECTION, NOTE THAT 1 = going right, 2 = going up, 3 = going left, 4 = going down
-//	int direction = 0;
-//	Coordinate currlocation;
-//	Coordinate nextlocation;
-//
-//	nextlocation.x = 1;
-//	nextlocation.y = 1;
-//
-//	direction = startingCarAngle / 90;
-//	if (direction == 0) {
-//		direction = 4;
-//	}
-//
-//	// Loop through every set of coordinates (every instruction)
-//	for (int i = 0; i < instructions.size(); i++) {
-//		if (direction == 1) {
-//			// Instructions if the first coordinate is being checked
-//			while ((instructions[i].x == (instructions[i + 1].x) - 1) && (instructions[i + 1].y == instructions[i].y)) {
-//
-//				}
-//		}
-//		if (direction == 2) {
-//			cout << "Hello, I am here 2" << endl;
-//		}
-//		if (direction == 3) {
-//			cout << "Hello, I am here 3" << endl;
-//		}
-//		if (direction == 4) {
-//			cout << "Hello, I am here 4" << endl;
-//		}
-//	}
-//	
-//}
-=======
-
 void FollowInstructions() {
 	//Assumptions about functionality of other functions are made
 	// Declaring array of instructions 
-	vector<Coordinate> algoOut;
-	Coordinate one;
-	Coordinate two;
+	vector<Pair> algoOut;
+	Pair one;
+	Pair two;
 	one.first = 10;
 	one.second = 5;
 	two.first = 4;
@@ -343,9 +277,10 @@ void FollowInstructions() {
 	
 	// CURRENT DIRECTION, NOTE THAT 1 = going right, 2 = going up, 3 = going left, 4 = going down
 	int direction = 0;
-	Coordinate currlocation;
-	Coordinate nextlocation;
-	Command nextcommand = GoStraight;
+	Pair currlocation;
+	Pair nextlocation;
+	Command nextcommand;
+	nextcommand = GoStraight;
 
 	nextlocation.first = 1;
 	nextlocation.second = 1;
@@ -355,7 +290,7 @@ void FollowInstructions() {
 		direction = 4;
 	}
 
-	// Loop through every set of coordinates (every instruction)
+	// Loop through every set of Pairs (every instruction)
 	for (int i = 0; i < algoOut.size() - 1; i++) {
 		nextcommand = GoStraight;
 		if (direction == 1) {
@@ -483,7 +418,6 @@ void FollowInstructions() {
 	CommandList.push_back(nextcommand);
 		
 }
->>>>>>> Stashed changes
 
 
 // Data Functions
