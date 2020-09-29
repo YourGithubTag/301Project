@@ -14,7 +14,7 @@ plotmap(m);
 
 
 % Your simulations will use this structure
-[x,y,z] = dfs('map_8.txt',[startloc],[targetloc])
+[x,y,z] = dfs('map_8.txt',[startloc],[targetloc]);
 [n,o,p] = BFS('map_8.txt',[startloc],[targetloc]);
 [m,v,s]= aStar('map_8.txt',[startloc],[targetloc]);
 
