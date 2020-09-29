@@ -1,9 +1,17 @@
-// A C++ Program to implement A* Search Algorithm 
-#include<bits/stdc++.h> 
+#ifndef _ASTAR_H
+#define _ASTAR_H 
+
+// A C++ Program to implement A* Search Algorithm
+// Adapted from https://www.geeksforgeeks.org/a-search-algorithm/
+
+#include <utility>
+#include <stack>
+#include <set>
+#include <iostream>
 using namespace std;
 
-#define ROW 9 
-#define COL 10 
+#define ROW 15
+#define COL 19
 
 // Creating a shortcut for int, int pair type 
 typedef pair<int, int> Pair;
@@ -11,7 +19,6 @@ typedef pair<int, int> Pair;
 // Creating a shortcut for pair<int, pair<int, int>> type 
 typedef pair<double, pair<int, int>> pPair;
 
-// A structure to hold the neccesary parameters 
 struct cell
 {
 	// Row and Column index of its parent 
@@ -64,7 +71,7 @@ double calculateHValue(int row, int col, Pair dest)
 // to destination 
 void tracePath(cell cellDetails[][COL], Pair dest)
 {
-	printf("\nThe Path is ");
+	cout << "\nThe Path is " << endl;
 	int row = dest.first;
 	int col = dest.second;
 
@@ -85,7 +92,7 @@ void tracePath(cell cellDetails[][COL], Pair dest)
 	{
 		pair<int, int> p = Path.top();
 		Path.pop();
-		printf("-> (%d,%d) ", p.first, p.second);
+		cout << "-> ( " << p.first << "," << p.second << ") " << endl;
 	}
 
 	return;
@@ -426,33 +433,4 @@ void aStarSearch(int grid[][COL], Pair src, Pair dest)
 	return;
 }
 
-
-// Driver program to test above function 
-int main()
-{
-	/* Description of the Grid-
-	1--> The cell is not blocked
-	0--> The cell is blocked */
-	int grid[ROW][COL] =
-	{
-		{ 1, 0, 1, 1, 1, 1, 0, 1, 1, 1 },
-		{ 1, 1, 1, 0, 1, 1, 1, 0, 1, 1 },
-		{ 1, 1, 1, 0, 1, 1, 0, 1, 0, 1 },
-		{ 0, 0, 1, 0, 1, 0, 0, 0, 0, 1 },
-		{ 1, 1, 1, 0, 1, 1, 1, 0, 1, 0 },
-		{ 1, 0, 1, 1, 1, 1, 0, 1, 0, 0 },
-		{ 1, 0, 0, 0, 0, 1, 0, 0, 0, 1 },
-		{ 1, 0, 1, 1, 1, 1, 0, 1, 1, 1 },
-		{ 1, 1, 1, 0, 0, 0, 1, 0, 0, 1 }
-	};
-
-	// Source is the left-most bottom-most corner 
-	Pair src = make_pair(8, 0);
-
-	// Destination is the left-most top-most corner 
-	Pair dest = make_pair(0, 0);
-
-	aStarSearch(grid, src, dest);
-
-	return(0);
-}
+#endif

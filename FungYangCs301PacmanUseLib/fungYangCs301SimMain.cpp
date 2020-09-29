@@ -19,11 +19,14 @@
 #include <vector>
 #include <iostream>
 
+#include "astar.h"
+
 using namespace std;
 
-//{=================================================
-//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-//these global variables must be defined here with no modification.
+
+/*********************** YUNG FANG DEFINED GLOBAL VARIABLES ***********************/
+
+// These global variables must be defined here with no modification.
 float virtualCarLinearSpeed;//can get ands set
 float virtualCarAngularSpeed;//can get and set
 float currentCarAngle;//can get and set
@@ -33,26 +36,15 @@ int sensorPopulationAlgorithmID;//can set
 float sensorSeparation;//can set
 float num_sensors;//can set
 
-// Map contains information on each node and its type
-int intersectionmap[15][19];
-
-// Custom coordinate data structure
-typedef struct {
-	int x;
-	int y;
-} Coordinate;
-
-// Custom command data typedef
-enum Command {TurnLeft, TurnRight, GoStraight, Turn180, Halt};
-
 vector<int> virtualCarSensorStates; //can get
 
 vector<ghostInfoPack> ghostInfoPackList;// can get
-//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-//}=================================================
 
 highPerformanceTimer myTimer;
 highPerformanceTimer turnTimer;
+
+
+/*********************** YUNG FANG FUNCTIONS ***********************/
 
 //just a helper function
 void setVirtualCarSpeed(float linearSpeed, float angularSpeed)
@@ -67,25 +59,51 @@ void setVirtualCarSpeed(float linearSpeed, float angularSpeed)
 float virtualCarLinearSpeed_seed;
 float virtualCarAngularSpeed_seed;
 
-/******************** USER DEFINED GLOBAL VARIABLES ********************/
+
+/*********************** OUR GLOBAL VARIABLES & DATATYPES ***********************/
+
+//// Custom coordinate data structure
+//typedef struct {
+//	int x;
+//	int y;
+//} Coordinate;
+
+// Custom command data typedef
+enum Command { TurnLeft, TurnRight, GoStraight, Turn180, Halt };
+
+// Stores the algorithm output of a vector of coordinates
+vector<Pair> algoOut;
+
+// Map contains information on each node and its type
+int intersectionmap[15][19];
+
+// Inverted map for shortest path algo
+int invertedMap[15][19];
+
+// Keeps track of which level was requested
+int level;
 
 // Bool for if the robot is currently dealing with an intersection
 bool intDetected = false;
-bool intStatusPrinted = false;
-// Integer for what type of intersection has been detected
-// 0 - no inter, 1 - T from bottom, 2 - T from left, 3 - T from right, 4 - Left Turn, 5 - Right Turn, 6 - Dead end
-int typeOfInt = 0;
+
 // Bool value to keep track of whether the centre sensor is active
 bool followingLine = true;
+
 // Target angle if the car is turning
 int targetAngle = 0;
+
 // Bool flag to check if the car is currently turning
 bool turning = false;
 
 // Variables to store the corners of the map
-Coordinate topLeft, topRight, botLeft, botRight;
+Pair topLeft, topRight, botLeft, botRight;
 
-/******************* USER DEFINED FUNCTIONS ********************/
+// Integer for what type of intersection has been detected
+// 0 - no inter, 1 - T from bottom, 2 - T from left, 3 - T from right, 4 - Left Turn, 5 - Right Turn, 6 - Dead end
+int typeOfInt = 0;
+
+
+/*********************** OUR FUNCTIONS ***********************/
 
 // Logic Functions
 void detectIntersection()
@@ -186,7 +204,7 @@ void detectIntersection()
 		cout << "Detected = " << intDetected << endl;
 	}
 
-	/*
+	/* OLD CODE, is able to detect a different type of intersection
 	// Inside intersection, redetecting type
 	else if ((intDetected == true) & (intDecided == true))
 	{
@@ -240,7 +258,6 @@ void detectIntersection()
 	return;
 }
 
-
 //void FollowInstructions() {
 //	//Assumptions about functionality of other functions are made
 //	// Declaring array of instructions 
@@ -288,7 +305,7 @@ void detectIntersection()
 //		}
 //	}
 //	
-}
+//}
 
 
 // Data Functions
@@ -379,14 +396,14 @@ void ConvertToIntersectionMap() {
 void findMapCorners()
 {
 	// Finds the most top left, top right, bottom left, and bottom right corners of the map
-	topLeft.x = 99;
-	topLeft.y = 99;
-	topRight.x = 99;
-	topRight.y = 99;
-	botLeft.x = 99;
-	botLeft.y = 99;
-	botRight.x = 99;
-	botRight.y = 99;
+	topLeft.first = 99;
+	topLeft.second = 99;
+	topRight.first = 99;
+	topRight.second = 99;
+	botLeft.first = 99;
+	botLeft.second = 99;
+	botRight.first = 99;
+	botRight.second = 99;
 
 
 	// Start with top left
@@ -398,17 +415,17 @@ void findMapCorners()
 		{
 			if (map[row][col] == 0)
 			{
-				topLeft.x = row;
-				topLeft.y = col;
+				topLeft.first = row;
+				topLeft.second = col;
 				found = true;
 				break;
 			}
 		}
 		// If no corner found then default to 6,9
-		if ((row == 6) && (topLeft.x == 99) && (topLeft.y == 99))
+		if ((row == 6) && (topLeft.first == 99) && (topLeft.second == 99))
 		{
-			topLeft.x = 6;
-			topLeft.y = 9;
+			topLeft.first = 6;
+			topLeft.second = 9;
 		}
 
 		// Break out if it has been found
@@ -426,18 +443,18 @@ void findMapCorners()
 		{
 			if (map[row][col] == 0)
 			{
-				topRight.x = row;
-				topRight.y = col;
+				topRight.first = row;
+				topRight.second = col;
 				found = true;
 				break;
 			}
 		}
 
 		// If no corner found then default to 6,10
-		if ((row == 6) && (topRight.x == 99) && (topRight.y == 99))
+		if ((row == 6) && (topRight.first == 99) && (topRight.second == 99))
 		{
-			topRight.x = 6;
-			topRight.y = 10;
+			topRight.first = 6;
+			topRight.second = 10;
 		}
 
 		// Break out if it has been found
@@ -455,17 +472,17 @@ void findMapCorners()
 		{
 			if (map[row][col] == 0)
 			{
-				botLeft.x = row;
-				botLeft.y = col;
+				botLeft.first = row;
+				botLeft.second = col;
 				found = true;
 				break;
 			}
 		}
 		// If no corner found then default to 7,9
-		if ((row == 7) && (botLeft.x == 99) && (botLeft.y == 99))
+		if ((row == 7) && (botLeft.first == 99) && (botLeft.second == 99))
 		{
-			botLeft.x = 7;
-			botLeft.y = 9;
+			botLeft.first = 7;
+			botLeft.second = 9;
 		}
 
 		// Break out if it has been found
@@ -483,18 +500,18 @@ void findMapCorners()
 		{
 			if (map[row][col] == 0)
 			{
-				botRight.x = row;
-				botRight.y = col;
+				botRight.first = row;
+				botRight.second = col;
 				found = true;
 				break;
 			}
 		}
 
 		// If no corner found then default to 7,10
-		if ((row == 7) && (botRight.x == 99) && (botRight.y == 99))
+		if ((row == 7) && (botRight.first == 99) && (botRight.second == 99))
 		{
-			botRight.x = 7;
-			botRight.y = 10;
+			botRight.first = 7;
+			botRight.second = 10;
 		}
 
 		// Break out if it has been found
@@ -504,10 +521,10 @@ void findMapCorners()
 		}
 	}
 
-	cout << "Top left is " << topLeft.x << ", " << topLeft.y << endl;
-	cout << "Top right is " << topRight.x << ", " << topRight.y << endl;
-	cout << "Bottom left is " << botLeft.x << ", " << botLeft.y << endl;
-	cout << "Bottom right is " << botRight.x << ", " << botRight.y << endl;
+	cout << "Top left is " << topLeft.first << ", " << topLeft.second << endl;
+	cout << "Top right is " << topRight.first << ", " << topRight.second << endl;
+	cout << "Bottom left is " << botLeft.first << ", " << botLeft.second << endl;
+	cout << "Bottom right is " << botRight.first << ", " << botRight.second << endl;
 	return;
 }
 
@@ -543,9 +560,25 @@ void statusReport()
 	//}---------------------------------------------------------------
 }
 
+void invertMap()
+{
+	for (int i = 0; i < 15; i++)
+	{
+		for (int j = 0; j < 19; j++)
+		{
+			if (map[i][j] == 0)
+			{
+				invertedMap[i][j] = 1;
+			}
+			else
+			{
+				invertedMap[i][j] = 0;
+			}
+		}
+	}
+}
 
 // Movement Functions
-
 void dumbLineFollow()
 {
 	// Follows the line blindly, taken from the code given to us
@@ -607,17 +640,26 @@ int virtualCarInit()
 
 	// All our initialisation code is here on out
 
+	// Get the level from the user
+	cout << "Enter desired level\n0 -> Debug Mode\n1 -> Level 1 Logic\n2 -> Level 2 Logic" << endl;
+	cin >> level;
+
 	// Find corners of the given map
 	findMapCorners();
 
 	// Find all intersections, dead ends, turns, and crosses in the given map
 	ConvertToIntersectionMap();
 
+	// Invert the given map
+	invertMap();
+
 	// Call the shortest path algorithm between the four corners of the map
-	//TODO
+	Pair src = { 1, 1 };
+	Pair dest = { 13, 17 };
+	aStarSearch(invertedMap, src, dest);
 
 	// Convert algorithm output to robot instructions
-	FollowInstructions();
+	//FollowInstructions();
 
 	// Print out the map containing intersections
 	for (int i = 0; i < 15; ++i)
@@ -629,6 +671,8 @@ int virtualCarInit()
 		std::cout << std::endl;
 	}
 
+	cout << "===============================================" << endl;
+
 	return 1;
 }
 
@@ -637,39 +681,41 @@ int virtualCarUpdate()
 	float linspeed = virtualCarLinearSpeed_seed;
 	float angspeed = virtualCarAngularSpeed_seed;
 
-	/*TODO
-	* 1. Read sensor
-	* - Can just use YungFang's code
-	* - Move to another function maybe
-	* - Determine which are active, e.g. -ve is left, +ve right
-	* - Value determines srength, e.g. -1 is slight left turn, 3 is strong right turn
-	* 2. Detect intersection
-	* - E.g. are the far left/far right sensors active? Is it a T or a pure turn? No 4 intersections luckily
-	* - Can we move the sensors around?
-	* 3. What do we do at a dead end?
-	* 4. What do we do off track?
-	* 5. When do we call director and algo?
-	*/
-
-	//dumbLineFollow();
-	//detectIntersection();
-	statusReport();
-
-	turnLeft();
-
-	/*
-	if (myTimer.getTimer() > 0.5)
+	// DEBUG
+	if (level == 0)
 	{
-		myTimer.resetTimer();
-		
-		turnLeft90OnSpot();
-	}
-	*/
-	
-	
-	
-	
+		//dumbLineFollow();
+		//detectIntersection();
+		statusReport();
 
+		/*
+		if (myTimer.getTimer() > 0.5)
+		{
+			myTimer.resetTimer();
+
+			turnLeft90OnSpot();
+		}
+		*/
+	}
+
+	// Level 1
+	else if (level == 1)
+	{
+
+	}
+
+	// Level 2
+	else if (level == 2)
+	{
+
+	}
+
+	else
+	{
+		cout << "Invalid level number." << endl;
+		return 1;
+	}
+	
 	return 1;
 }
 
