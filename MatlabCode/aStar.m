@@ -188,11 +188,3 @@ end
 function [cost] = heuristic_cost_estimate(start, goal)
 cost = (abs(start(1) - goal(1)) + abs(start(2) - goal(2)));
 end
-
-% This function return an array of nodes which have been searched
-function [search] = getSearchedPath(closedSet)
-search = [];
-for i = 1:numel(closedSet)
-    search = [search;closedSet{i}];
-end
-end

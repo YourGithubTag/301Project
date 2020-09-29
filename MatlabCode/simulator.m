@@ -14,7 +14,22 @@ plotmap(m);
 
 
 % Your simulations will use this structure
-[m,v,s]=aStar('map_8.txt',[startloc],[targetloc]);
+[x,y,z] = dfs('map_8.txt',[startloc],[targetloc])
+[n,o,p] = BFS('map_8.txt',[startloc],[targetloc]);
+[m,v,s]= aStar('map_8.txt',[startloc],[targetloc]);
+
+timeDFS = @() dfs('map_8.txt',[startloc],[targetloc]);
+timeBFS = @() BFS('map_8.txt',[startloc],[targetloc]);
+timeaStar = @() aStar('map_8.txt',[startloc],[targetloc]);
+
+disp('DFS' )
+timeforDFS= timeit(timeDFS)
+disp('BFS' )
+timeforBFS=timeit(timeBFS)
+disp('aStar')
+timeforASTAR=timeit(timeaStar)
+
+
 
 %Here   'm' is the map file returned as a matrix
 %       'v' is a matrix that shows which cells have been visited, '0' means
@@ -24,4 +39,7 @@ plotmap(m);
 %       [targetloc] is also a vector ie [4,18]
 
 %To view the path determined above use 
+
+plotmap(x,z);
+plotmap(n,p);
 plotmap(m,s);
