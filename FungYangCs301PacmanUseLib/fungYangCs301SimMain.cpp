@@ -238,47 +238,53 @@ void detectIntersection()
 }
 
 
-void FollowInstructions() {
-	//Assumptions about functionality of other functions are made
-	// Declaring array of instructions 
-	vector<coord> instructions;
-	instructions[0].x = 3;
-	instructions[0].y = 3;
-	instructions[1].x = 3;
-	instructions[1].y = 3;
-
-	
-	// CURRENT DIRECTION, NOTE THAT 1 = going right, 2 = going up, 3 = going left, 4 = going down
-	int direction = 0;
-	coord prevlocation;
-	coord currlocation;
-	coord nextlocation;
-
-	nextlocation.x = 1;
-	nextlocation.y = 1;
-
-	direction = currentCarAngle / 90;
-	if (direction == 0) {
-		direction = 4;
-	}
-
-	// Loop through every set of coordinates (every instruction)
-	for (int i = 0; i < instructions.size(); i++) {
-		if ((nextlocation.x != 0) || (nextlocation.y != 0)) {
-			if (direction == 1) {
-				cout << "Hello, I am here 1" << endl;
-			}
-			if (direction == 2) {
-				cout << "Hello, I am here 2" << endl;
-			}
-			if (direction == 3) {
-				cout << "Hello, I am here 3" << endl;
-			}
-			if (direction == 4) {
-				cout << "Hello, I am here 4" << endl;
-			}
-		}
-	}
+//void FollowInstructions() {
+//	//Assumptions about functionality of other functions are made
+//	// Declaring array of instructions 
+//	int startingCarAngle = 0;
+//	vector<Coordinate> instructions;
+//	Coordinate one;
+//	Coordinate two;
+//	one.x = 10;
+//	one.y = 5;
+//	two.x = 4;
+//	two.y = 5;
+//
+//	instructions.push_back(one);
+//	instructions.push_back(two);
+//	
+//	// CURRENT DIRECTION, NOTE THAT 1 = going right, 2 = going up, 3 = going left, 4 = going down
+//	int direction = 0;
+//	Coordinate currlocation;
+//	Coordinate nextlocation;
+//
+//	nextlocation.x = 1;
+//	nextlocation.y = 1;
+//
+//	direction = startingCarAngle / 90;
+//	if (direction == 0) {
+//		direction = 4;
+//	}
+//
+//	// Loop through every set of coordinates (every instruction)
+//	for (int i = 0; i < instructions.size(); i++) {
+//		if (direction == 1) {
+//			// Instructions if the first coordinate is being checked
+//			while ((instructions[i].x == (instructions[i + 1].x) - 1) && (instructions[i + 1].y == instructions[i].y)) {
+//
+//				}
+//		}
+//		if (direction == 2) {
+//			cout << "Hello, I am here 2" << endl;
+//		}
+//		if (direction == 3) {
+//			cout << "Hello, I am here 3" << endl;
+//		}
+//		if (direction == 4) {
+//			cout << "Hello, I am here 4" << endl;
+//		}
+//	}
+//	
 }
 
 
