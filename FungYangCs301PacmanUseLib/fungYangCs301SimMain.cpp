@@ -74,6 +74,8 @@ enum Command { TurnLeft, TurnRight, GoStraight, Turn180, Halt };
 //List of commands for robot
 vector<Command> CommandList;
 
+vector<Pair> CoordinateList;
+
 // Stores the algorithm output of a vector of Pairs
 vector<Pair> algoOut;
 
@@ -768,7 +770,7 @@ int virtualCarInit()
 	// Call the shortest path algorithm between the four corners of the map
 	Pair src = { 1, 1 };
 	Pair dest = { 13, 17 };
-	aStarSearch(invertedMap, src, dest);
+	CoordinateList = aStarSearch(invertedMap, src, dest);
 
 	// Convert algorithm output to robot instructions
 	//FollowInstructions();

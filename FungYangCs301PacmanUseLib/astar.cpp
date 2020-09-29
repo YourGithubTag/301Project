@@ -7,9 +7,10 @@ using namespace std;
 
 // Creating a shortcut for int, int pair type 
 typedef pair<int, int> Pair;
-
 // Creating a shortcut for pair<int, pair<int, int>> type 
 typedef pair<double, pair<int, int>> pPair;
+
+vector<Pair> coordinates;
 
 // A structure to hold the neccesary parameters 
 struct cell
@@ -79,14 +80,17 @@ void tracePath(cell cellDetails[][COL], Pair dest)
 		row = temp_row;
 		col = temp_col;
 	}
-
+	CoordinateList c;
 	Path.push(make_pair(row, col));
 	while (!Path.empty())
 	{
 		pair<int, int> p = Path.top();
+		c.push_back(p);
 		Path.pop();
 		printf("-> (%d,%d) ", p.first, p.second);
 	}
+
+	coordinates = c;
 
 	return;
 }
@@ -94,7 +98,7 @@ void tracePath(cell cellDetails[][COL], Pair dest)
 // A Function to find the shortest path between 
 // a given source cell to a destination cell according 
 // to A* Search Algorithm 
-void aStarSearch(int grid[][COL], Pair src, Pair dest)
+vector<Pair> aStarSearch(int grid[][COL], Pair src, Pair dest)
 {
 	// If the source is out of range 
 	if (isValid(src.first, src.second) == false)
@@ -187,25 +191,14 @@ void aStarSearch(int grid[][COL], Pair src, Pair dest)
 		closedList[i][j] = true;
 
 		/*
-			Generating all the 8 successor of this cell
-
-				N.W N N.E
-				\ | /
-				\ | /
-				W----Cell----E
-					/ | \
-				/ | \
-				S.W S S.E
+			Generating all the 4 successor of this cell
 
 			Cell-->Popped Cell (i, j)
 			N --> North	 (i-1, j)
 			S --> South	 (i+1, j)
 			E --> East	 (i, j+1)
 			W --> West		 (i, j-1)
-			N.E--> North-East (i-1, j+1)
-			N.W--> North-West (i-1, j-1)
-			S.E--> South-East (i+1, j+1)
-			S.W--> South-West (i+1, j-1)*/
+			*/
 
 			// To store the 'g', 'h' and 'f' of the 8 successors 
 		double gNew, hNew, fNew;
@@ -423,7 +416,7 @@ void aStarSearch(int grid[][COL], Pair src, Pair dest)
 	if (foundDest == false)
 		printf("Failed to find the Destination Cell\n");
 
-	return;
+	return coordinates;
 }
 
 
