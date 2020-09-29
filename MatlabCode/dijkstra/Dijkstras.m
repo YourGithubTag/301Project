@@ -1,4 +1,4 @@
-function [Cost, Route] = Dijkstras( Graph, SourceNode, TerminalNode )
+function [Cost, Route] = Dijkstras( graph, SourceNode, TerminalNode )
 %Dijkstras.m Given a graph with distances from node to node calculates the
 %optimal route from the Source Node to the Terminal Node as defined by the
 %inputs.
@@ -26,6 +26,7 @@ function [Cost, Route] = Dijkstras( Graph, SourceNode, TerminalNode )
 % node and will always end at the terminal node unless the algorithm fails
 % to converge due to there not existing a valid path between the source
 % node and the terminal node. 
+
 
 % Check for valid parameters
 if size(Graph,1) ~= size(Graph,2)

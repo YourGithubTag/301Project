@@ -1,4 +1,4 @@
-function [retmap,retvisited,retsteps, search] = aStar( mapfile,startlocation,targetlocation)
+function [retmap,retvisited,retsteps] = aStar( mapfile,startlocation,targetlocation)
 % convert map file into a 2D matlab array
 retmap = map_convert(mapfile);
 
@@ -26,7 +26,7 @@ for i = 1:m
 end
 
 % A set of nodes that are already evaluated
-closedSet = cell(1,1);
+closedSet =  cell(1,1);
 countCloseSet = 1;
 
 % A set of discovered nodes that are not yet evaluated
@@ -85,7 +85,9 @@ while(~cellfun('isempty', openSet))
         end
         % tentitative_gScore : The distance from the start node to a neighbour node
         % In this case, the distance between each node is always 1
+        
         tentitative_gScore = gScore(current(1), current(2)) + 1;
+        
         % If the neighbour node is not in the set of discovered nodes then
         if(isFound(neighbours(i,:),openSet) == 0)
             % Add the node to the set since it has been discovered
@@ -94,6 +96,7 @@ while(~cellfun('isempty', openSet))
         elseif tentitative_gScore >= gScore(neighbours(i,1),neighbours(i,2))
             continue;
         end
+        
         % Store the current node as the node that this neighbour came from
         cameFrom{neighbours(i,1),neighbours(i,2)} = current;
         % Store the distance from the start node to this neighbour node
@@ -109,7 +112,7 @@ if(current == targetlocation)
     retsteps = getSteps(cameFrom, current, startlocation);
 end
 % gets the nodes which have been searched
-search = getSearchedPath(closedSet);
+% search = getSearchedPath(closedSet);
 end
 
 % This function return true if a node is found in a set, false otherwise
@@ -191,3 +194,5 @@ function [search] = getSearchedPath(closedSet)
 search = [];
 for i = 1:numel(closedSet)
     search = [search;closedSet{i}];
+end
+end
