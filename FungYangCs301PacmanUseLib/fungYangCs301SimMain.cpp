@@ -36,6 +36,24 @@ int sensorPopulationAlgorithmID;//can set
 float sensorSeparation;//can set
 float num_sensors;//can set
 
+<<<<<<< Updated upstream
+=======
+// Map contains information on each node and its type
+int intersectionmap[15][19];
+
+// Custom coordinate data structure
+typedef struct {
+	int first;
+	int second;
+} Coordinate;
+
+// Custom command data typedef
+enum Command {TurnLeft, TurnRight, GoStraight, Turn180, Halt};
+
+//List of commands for robot
+vector<Command> CommandList;
+
+>>>>>>> Stashed changes
 vector<int> virtualCarSensorStates; //can get
 
 vector<ghostInfoPack> ghostInfoPackList;// can get
@@ -258,6 +276,7 @@ void detectIntersection()
 	return;
 }
 
+<<<<<<< Updated upstream
 //void FollowInstructions() {
 //	//Assumptions about functionality of other functions are made
 //	// Declaring array of instructions 
@@ -306,6 +325,165 @@ void detectIntersection()
 //	}
 //	
 //}
+=======
+
+void FollowInstructions() {
+	//Assumptions about functionality of other functions are made
+	// Declaring array of instructions 
+	vector<Coordinate> algoOut;
+	Coordinate one;
+	Coordinate two;
+	one.first = 10;
+	one.second = 5;
+	two.first = 4;
+	two.second = 5;
+
+	algoOut.push_back(one);
+	algoOut.push_back(two);
+	
+	// CURRENT DIRECTION, NOTE THAT 1 = going right, 2 = going up, 3 = going left, 4 = going down
+	int direction = 0;
+	Coordinate currlocation;
+	Coordinate nextlocation;
+	Command nextcommand = GoStraight;
+
+	nextlocation.first = 1;
+	nextlocation.second = 1;
+
+	direction = currentCarAngle / 90;
+	if (direction == 0) {
+		direction = 4;
+	}
+
+	// Loop through every set of coordinates (every instruction)
+	for (int i = 0; i < algoOut.size() - 1; i++) {
+		nextcommand = GoStraight;
+		if (direction == 1) {
+			while ((algoOut[i].first == ((algoOut[i + 1].first) + 1)) && (algoOut[i + 1].second == algoOut[i].second)) {
+				//Add go straight commands if it is possible to turn but command says go straight
+				if (intersectionmap[(algoOut[i].first)][(algoOut[i].second) - 1] != 5 || intersectionmap[(algoOut[i].first)][(algoOut[i].second) + 1] != 5) {
+					CommandList.push_back(nextcommand);
+				}
+				i++;
+			}
+			// Instructions for turning right
+			if ((algoOut[i].first) == (algoOut[i + 1].first) && algoOut[i].second == (algoOut[i + 1].second + 1)) {
+				nextcommand = TurnRight;
+				CommandList.push_back(nextcommand);
+				direction = 4;
+				i++;
+			}
+			// Instructions for turning left
+			if ((algoOut[i].first) == (algoOut[i + 1].first) && algoOut[i].second == (algoOut[i + 1].second - 1)) {
+				nextcommand = TurnLeft;
+				CommandList.push_back(nextcommand);
+				direction = 2;
+				i++;
+			}
+			// Instructions for turning 180
+			if ((algoOut[i].first == ((algoOut[i + 1].first) - 1)) && (algoOut[i + 1].second == algoOut[i].second)) {
+				nextcommand = Turn180;
+				CommandList.push_back(nextcommand);
+				direction = 3;
+				i++;
+			}
+		}
+		else if (direction == 2) {
+			while ((algoOut[i].first == algoOut[i + 1].first) && (algoOut[i].second == algoOut[i + 1].second + 1)) {
+				//Add go straight commands if it is possible to turn but command says go straight
+				if (intersectionmap[(algoOut[i].first - 1)][(algoOut[i].second)] != 5 || intersectionmap[(algoOut[i].first + 1)][(algoOut[i].second)] != 5) {
+					CommandList.push_back(nextcommand);
+				}
+				i++;
+			}
+			// Instructions for turning right
+			if ((algoOut[i].first) == (algoOut[i + 1].first + 1) && algoOut[i].second == (algoOut[i + 1].second)) {
+				nextcommand = TurnRight;
+				CommandList.push_back(nextcommand);
+				direction = 1;
+				i++;
+			}
+			// Instructions for turning left
+			if ((algoOut[i].first) == (algoOut[i + 1].first - 1) && algoOut[i].second == (algoOut[i + 1].second)) {
+				nextcommand = TurnLeft;
+				CommandList.push_back(nextcommand);
+				direction = 3;
+				i++;
+			}
+			// Instructions for turning 180
+			if ((algoOut[i].first == algoOut[i + 1].first) && (algoOut[i].second == algoOut[i + 1].second - 1)) {
+				nextcommand = Turn180;
+				CommandList.push_back(nextcommand);
+				direction = 4;
+				i++;
+			}
+		}
+		else if (direction == 3) {
+			while ((algoOut[i].first == ((algoOut[i + 1].first) - 1)) && (algoOut[i + 1].second == algoOut[i].second)) {
+				//Add go straight commands if it is possible to turn but command says go straight
+				if (intersectionmap[(algoOut[i].first)][(algoOut[i].second) - 1] != 5 || intersectionmap[(algoOut[i].first)][(algoOut[i].second) + 1] != 5) {
+					CommandList.push_back(nextcommand);
+				}
+				i++;
+			}
+			// Instructions for turning right
+			if ((algoOut[i].first) == (algoOut[i + 1].first) && algoOut[i].second == (algoOut[i + 1].second + 1)) {
+				nextcommand = TurnRight;
+				CommandList.push_back(nextcommand);
+				direction = 2;
+				i++;
+			}
+			// Instructions for turning left
+			if ((algoOut[i].first) == (algoOut[i + 1].first) && algoOut[i].second == (algoOut[i + 1].second - 1)) {
+				nextcommand = TurnLeft;
+				CommandList.push_back(nextcommand);
+				direction = 4;
+				i++;
+			}
+			// Instructions for turning 180
+			if ((algoOut[i].first == ((algoOut[i + 1].first) + 1)) && (algoOut[i + 1].second == algoOut[i].second)) {
+				nextcommand = Turn180;
+				CommandList.push_back(nextcommand);
+				direction = 1;
+				i++;
+			}
+		}
+		else if (direction == 4) {
+			while ((algoOut[i].first == algoOut[i + 1].first) && (algoOut[i + 1].second - 1 == algoOut[i].second)) {
+				//Add go straight commands if it is possible to turn but command says go straight
+				if (intersectionmap[(algoOut[i].first - 1)][(algoOut[i].second)] != 5 || intersectionmap[(algoOut[i].first + 1)][(algoOut[i].second)] != 5) {
+					CommandList.push_back(nextcommand);
+				}
+				i++;
+			}
+			// Instructions for turning right
+			if ((algoOut[i].first) == (algoOut[i + 1].first - 1) && algoOut[i].second == (algoOut[i + 1].second)) {
+				nextcommand = TurnRight;
+				CommandList.push_back(nextcommand);
+				direction = 3;
+				i++;
+			}
+			// Instructions for turning left
+			if ((algoOut[i].first) == (algoOut[i + 1].first + 1) && algoOut[i].second == (algoOut[i + 1].second)) {
+				nextcommand = TurnLeft;
+				CommandList.push_back(nextcommand);
+				direction = 1;
+				i++;
+			}
+			// Instructions for turning 180
+			if ((algoOut[i].first == algoOut[i + 1].first) && (algoOut[i].second == algoOut[i + 1].second + 1)) {
+				nextcommand = Turn180;
+				CommandList.push_back(nextcommand);
+				direction = 2;
+				i++;
+			}
+		}
+	}
+	nextcommand = Halt;
+	CommandList.push_back(nextcommand);
+		
+}
+>>>>>>> Stashed changes
 
 
 // Data Functions
