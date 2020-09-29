@@ -499,7 +499,18 @@ enum Command { TurnLeft, TurnRight, GoStraight, Turn180, Halt };
 
 //List of commands for robot
 vector<Command> CommandList;
+
 int CommandListIndex;
+boolean ActionRequired;
+
+float DesiredAngle;
+float PreviousAngle;
+
+float upperBoundAngle;
+float lowerBoundAngle
+
+
+
 
 //vector<Pair> CoordinateList;
 
@@ -1151,6 +1162,41 @@ void dumbLineFollow()
 	}
 }
 
+float calculateDesiredAngle(Command current) {
+	float newAngle;
+
+	switch (current) {
+	case TurnLeft:
+		newAngle = PreviousAngle + 90;
+		break;
+
+	case TurnRight:
+		newAngle = PreviousAngle - 90;
+		break;
+
+	case Turn180:
+		newAngle = PreviousAngle + 180;
+		break; 
+	}
+
+	newAngle = wrapAngle(newAngle);
+	return newAngle;
+
+}
+
+float wrapAngle(float angle) {
+
+	if (angle > 360) {
+		angle = angle - 360;
+	}
+	else if (angle <= 0) {
+		angle = angle + 360;
+	}
+
+	return angle;
+}
+
+
 void turnLeft()
 {
 	setVirtualCarSpeed(virtualCarLinearSpeed_seed * .1, virtualCarAngularSpeed_seed);
@@ -1165,13 +1211,21 @@ void goStraight()
 	setVirtualCarSpeed(virtualCarLinearSpeed_seed, 0);
 }
 
+void TurnLeftatintersection() {
+
+	if (currentCarAngle <= lowerBoundAngle && currentCarAngle <= upperBoundAngle) {
+		turnLeft();
+	}
 
 
-void RobotControl() {
-	Command current = CommandList.at(CommandListIndex);
+}
 
-	switch (current) {
+
+void RobotControl(Command currcommand) {
+
+	switch (currcommand) {
 		case TurnLeft:
+			TurnLeftatintersection();
 			break;
 
 		case TurnRight:
@@ -1189,10 +1243,9 @@ void RobotControl() {
 
 	}
 
-
-
-
 }
+
+
 
 
 
@@ -1265,6 +1318,7 @@ int virtualCarUpdate()
 	float linspeed = virtualCarLinearSpeed_seed;
 	float angspeed = virtualCarAngularSpeed_seed;
 
+
 	// DEBUG
 	if (level == 0)
 	{
@@ -1280,6 +1334,31 @@ int virtualCarUpdate()
 			turnLeft90OnSpot();
 		}
 		*/
+
+		// CODE TO TRY AND TURN AT A INTERSECTION
+		//TODO clean up stuff before all this
+		Command current;
+
+		//RUN ONCE CODE FOR AN ACTION
+		if (intDetected && !ActionRequired) {
+
+			ActionRequired = true;
+			Command current = CommandList.at(CommandListIndex);
+			PreviousAngle = currentCarAngle;
+
+			if (current != GoStraight) {
+				DesiredAngle = calculateDesiredAngle(current);
+				upperBoundAngle = wrapAngle(DesiredAngle + 10);
+				lowerBoundAngle = wrapAngle(DesiredAngle - 10);
+			}
+			else {
+				;
+			}
+		}
+
+		if(ActionRequired) {
+			RobotControl(current);
+		}
 	}
 
 	// Level 1
