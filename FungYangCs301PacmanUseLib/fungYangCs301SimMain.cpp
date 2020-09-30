@@ -1197,9 +1197,31 @@ int virtualCarInit()
 	invertMap();
 
 	// Call the shortest path algorithm between the four corners of the map
-	Pair src = { 1, 1 };
-	Pair dest = { 13, 17 };
-	aStarSearch(invertedMap, src, dest);
+
+	//Pair src = { 1, 1 };
+	//Pair dest = { 13, 17 };
+
+
+
+	//Shortest path form top left to bottom right
+	aStarSearch(invertedMap, topLeft, botRight);
+	algoOut.pop_back();
+
+	//Shortest path form bottom right to top right
+	aStarSearch(invertedMap, botRight, topRight);
+	algoOut.pop_back();
+
+	//Shortest path form top right to bottom left
+	aStarSearch(invertedMap, topRight, botLeft);
+	//algoOut.pop_back();
+
+	cout << "We are testing multiple astar calls";
+
+	for (int i = 0; i < algoOut.size(); i++) {
+		cout << "Next = " << algoOut[i].first << "," << algoOut[i].second << endl;
+	}
+
+
 
 	// Convert algorithm output to robot instructions
 	//FollowInstructions();
