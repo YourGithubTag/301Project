@@ -1180,11 +1180,11 @@ float calculateDesiredAngle(Command current) {
 
 void turnLeft()
 {
-	setVirtualCarSpeed(virtualCarLinearSpeed_seed * .5, virtualCarAngularSpeed_seed * .8);
+	setVirtualCarSpeed(virtualCarLinearSpeed_seed, virtualCarAngularSpeed_seed * 2.5);
 }
 
 void turnRight() {
-	setVirtualCarSpeed(virtualCarLinearSpeed_seed * .5, -virtualCarAngularSpeed_seed * .8);
+	setVirtualCarSpeed(virtualCarLinearSpeed_seed, -virtualCarAngularSpeed_seed * 2.5);
 }
 
 void goStraight()
@@ -1193,7 +1193,7 @@ void goStraight()
 }
 
 void pivot() {
-	setVirtualCarSpeed(0, virtualCarAngularSpeed_seed * 2);
+	setVirtualCarSpeed(0, virtualCarAngularSpeed_seed * 2.4);
 }
 
 void TurnLeftatintersection() {
@@ -1289,8 +1289,8 @@ int virtualCarInit()
 	num_sensors = 7;
 	sensorSeparation = 0.08;
 
-	virtualCarLinearSpeed_seed = 0.4;
-	virtualCarAngularSpeed_seed = 50;
+	virtualCarLinearSpeed_seed = 0.6;
+	virtualCarAngularSpeed_seed = 40;
 	currentCarPosCoord_X = cellToCoordX(1);
 	currentCarPosCoord_Y = cellToCoordY(1);
 	currentCarAngle = -90;
@@ -1312,14 +1312,20 @@ int virtualCarInit()
 	// Initialize the visitedMap
 	initializeVisitedMap();
 
-	// Call the shortest path algorithm between the four corners of the map in an hourglass shape
-	aStarSearch(invertedMap, topLeft, topRight);
+	// Call the shortest path algorithm between the four corners to cover a large portion of the map
+	aStarSearch(invertedMap, topLeft, botRight);
+	algoOut.pop_back();
+	aStarSearch(invertedMap, botRight, topRight);
 	algoOut.pop_back();
 	aStarSearch(invertedMap, topRight, botLeft);
 	algoOut.pop_back();
-	aStarSearch(invertedMap, botLeft, botRight);
+	aStarSearch(invertedMap, botLeft, topLeft);
 	algoOut.pop_back();
-	aStarSearch(invertedMap, botRight, topLeft);
+	aStarSearch(invertedMap, topLeft, topRight);
+	algoOut.pop_back();
+	aStarSearch(invertedMap, topRight, botRight);
+	algoOut.pop_back();
+	aStarSearch(invertedMap, botRight, botLeft);
 
 	// Convert algorithm output to robot instructions
 	FollowInstructions();
