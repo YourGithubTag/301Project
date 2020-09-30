@@ -1214,6 +1214,10 @@ void goStraight()
 	setVirtualCarSpeed(virtualCarLinearSpeed_seed, 0);
 }
 
+void pivot() {
+	setVirtualCarSpeed(0, virtualCarAngularSpeed_seed * 2);
+}
+
 void TurnLeftatintersection() {
 
 	float difference = wrapAngle(currentCarAngle - PreviousAngle);
@@ -1221,6 +1225,7 @@ void TurnLeftatintersection() {
 	cout << "Difference: " <<  difference << endl;
 
 	if ((difference >= 80) && (difference <= 90)) {
+		CommandListIndex++;
 		cout << "done LEFT TURN" << endl;
 		ActionRequired = false;
 		intDetected = false;
@@ -1234,11 +1239,12 @@ void TurnLeftatintersection() {
 
 void TurnRightatintersection() {
 
-	float difference = wrapAngle(currentCarAngle - PreviousAngle);
+	float difference = wrapAngle(PreviousAngle - currentCarAngle);
 
 	cout << "Difference: " << difference << endl;
 
 	if ((difference >= 80) && (difference <= 90)) {
+		CommandListIndex++;
 		cout << " done RIGHT TURN" << endl;
 		ActionRequired = false;
 		intDetected = false;
@@ -1252,13 +1258,32 @@ void TurnRightatintersection() {
 
 void GoStraighttatintersection() {
 	goStraight();
+	cout << "straight" << endl;
 	if (straightTimer.getTimer() > 2)
 	{	
+		CommandListIndex++;
 		ActionRequired = false;
 		intDetected = false;
 		
 	}
 
+}
+
+void turn180() {
+
+	float difference = wrapAngle(currentCarAngle - PreviousAngle);
+
+	cout << "Difference: " << difference << endl;
+
+	if ((difference >= 170) && (difference <= 190)) {
+		CommandListIndex++;
+		cout << "180" << endl;
+		ActionRequired = false;
+		intDetected = false;
+	}
+	else {
+		pivot();
+	}
 }
 
 
@@ -1272,14 +1297,18 @@ void RobotControl(Command currcommand) {
 			break;
 
 		case TurnRight:
+			cout << "RIGHT TURN CASE" << endl;
 			TurnRightatintersection();
 			break;
 
 		case GoStraight:
+			cout << "straight  CASE" << endl;
 			GoStraighttatintersection();
 			break;
 
 		case Turn180:
+			cout << "180  CASE" << endl;
+			turn180();
 			break;
 
 			//TODO: HALT STUFF
@@ -1315,13 +1344,15 @@ int virtualCarInit()
 	for (int i = 0; i < 30; i++) {
 		CommandList.push_back(TurnLeft);
 		CommandList.push_back(TurnRight);
+		CommandList.push_back(GoStraight);
+		CommandList.push_back(Turn180);
 		CommandList.push_back(TurnLeft);
+		CommandList.push_back(GoStraight);
+		CommandList.push_back(TurnLeft);
+		CommandList.push_back(Turn180);
 		CommandList.push_back(TurnRight);
-		CommandList.push_back(TurnLeft);
-		CommandList.push_back(TurnRight);
-		CommandList.push_back(TurnLeft);
-		CommandList.push_back(TurnRight);
-		CommandList.push_back(TurnLeft);
+		CommandList.push_back(Turn180);
+		CommandList.push_back(GoStraight);
 		CommandList.push_back(TurnRight);
 	}
 
@@ -1397,7 +1428,6 @@ int virtualCarUpdate()
 
 		//RUN ONCE CODE FOR AN ACTION
 		if (intDetected && !ActionRequired) {
-
 			ActionRequired = true;
 			current = CommandList.at(CommandListIndex);
 			PreviousAngle = currentCarAngle;
