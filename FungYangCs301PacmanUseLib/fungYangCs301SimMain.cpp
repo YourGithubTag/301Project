@@ -540,6 +540,9 @@ bool intDetected = false;
 // Bool value to keep track of whether the centre sensor is active
 bool followingLine = true;
 
+// Stores sensors form previous tick
+string prevSensors = "0000000";
+
 // Target angle if the car is turning
 int targetAngle = 0;
 
@@ -619,79 +622,19 @@ void detectIntersection()
 		if (((rightStrength > 1) || (leftStrength > 1)) && (centered == true))
 		{
 			intDetected = true;
-			//cout << "Intersection Detected." << endl;
 		}
 
-		// Check for a left turn
-		if ((leftStrength > 10) && (rightStrength > 0) && (centered == TRUE))
+		// Check to see if we have gone off a dead end
+		if ((sensors == "0000000") && ((prevSensors[2] == '1') || (prevSensors[3] == '1') || (prevSensors[4] == '1')))
 		{
-			cout << "Intersection discovered: Left Turn" << endl;
+			intDetected = true;
 		}
-		// Check for a right turn
-		else if ((leftStrength > 0) && (rightStrength > 10) && (centered == TRUE))
-		{
-			cout << "Intersection discovered: Right Turn" << endl;
-		}
+
+
+		// Check for a dead end
 	}
 
-	// DEBUGGING: for printing some values to console
-	/*if (myTimer.getTimer() > 0.5)
-	{
-		myTimer.resetTimer();
-		cout << sensors << endl;
-		cout << "Detected = " << intDetected << endl;
-	}*/
-
-	/* OLD CODE, is able to detect a different type of intersection
-	// Inside intersection, redetecting type
-	else if ((intDetected == true) & (intDecided == true))
-	{
-		// Check if we left intersection
-		if ((leftStrength == 0) && (rightStrength == 0) && (centered == TRUE))
-		{
-			cout << "Left intersection" << endl;
-			typeOfInt = 0;
-			intDetected = false;
-			intDecided = false;
-		}
-		// Recheck for entering the bottom of a T intersection
-		else if ((leftStrength == 111) && (rightStrength == 111) && (centered == TRUE))
-		{
-			cout << "Intersection changed: Bottom of T intersection" << endl;
-			typeOfInt = 1;
-		}
-		// Recheck for entering the left of a T intersection
-		else if ((leftStrength == 10) && (rightStrength > 10))
-		{
-			cout << "Intersection changed: Left of T intersection" << endl;
-			typeOfInt = 1;
-		}
-		// Recheck for entering the right of a T intersection
-		else if ((leftStrength > 10) && (rightStrength == 10))
-		{
-			cout << "Intersection changed: Right of T intersection" << endl;
-			typeOfInt = 1;
-		}
-	}
-	// Should never be reached
-	else
-	{
-		cout << "You shouldn't be here." << endl;
-	}
-	
-	
-
-
-	
-	// Check for a dead end
-	else if ((rightStrength == 0) && (leftStrength == 0) && (centered == FALSE))
-	{
-		intDetected = TRUE;
-		intDecided = TRUE;
-		cout << "Dead End Detected" << endl;
-		//TODO: Add dead end functionality
-	}
-	*/
+	prevSensors = sensors;
 
 	return;
 }
@@ -1290,11 +1233,11 @@ float calculateDesiredAngle(Command current) {
 
 void turnLeft()
 {
-	setVirtualCarSpeed(virtualCarLinearSpeed_seed * .3, virtualCarAngularSpeed_seed * .8);
+	setVirtualCarSpeed(virtualCarLinearSpeed_seed * .3, virtualCarAngularSpeed_seed );
 }
 
 void turnRight() {
-	setVirtualCarSpeed(virtualCarLinearSpeed_seed * .3, -virtualCarAngularSpeed_seed * .8);
+	setVirtualCarSpeed(virtualCarLinearSpeed_seed * .3, -virtualCarAngularSpeed_seed);
 }
 
 void goStraight()
@@ -1303,7 +1246,7 @@ void goStraight()
 }
 
 void pivot() {
-	setVirtualCarSpeed(0, virtualCarAngularSpeed_seed * 2);
+	setVirtualCarSpeed(0, virtualCarAngularSpeed_seed * 2.4);
 }
 
 void TurnLeftatintersection() {
@@ -1411,8 +1354,8 @@ int virtualCarInit()
 	num_sensors = 7;
 	sensorSeparation = 0.08;
 
-	virtualCarLinearSpeed_seed = 0.4;
-	virtualCarAngularSpeed_seed = 50;
+	virtualCarLinearSpeed_seed = 0.64;
+	virtualCarAngularSpeed_seed = 40;
 	currentCarPosCoord_X = cellToCoordX(1);
 	currentCarPosCoord_Y = cellToCoordY(1);
 
