@@ -1224,7 +1224,7 @@ void TurnLeftatintersection() {
 
 	cout << "Difference: " <<  difference << endl;
 
-	if ((difference >= 80) && (difference <= 90)) {
+	if ((difference >= 85) && (difference <= 90)) {
 		CommandListIndex++;
 		cout << "done LEFT TURN" << endl;
 		ActionRequired = false;
@@ -1243,7 +1243,7 @@ void TurnRightatintersection() {
 
 	cout << "Difference: " << difference << endl;
 
-	if ((difference >= 80) && (difference <= 90)) {
+	if ((difference >= 85) && (difference <= 90)) {
 		CommandListIndex++;
 		cout << " done RIGHT TURN" << endl;
 		ActionRequired = false;
@@ -1253,13 +1253,12 @@ void TurnRightatintersection() {
 		turnRight();
 	}
 
-
 }
 
 void GoStraighttatintersection() {
 	goStraight();
 	cout << "straight" << endl;
-	if (straightTimer.getTimer() > 2)
+	if (straightTimer.getTimer() > 0.5)
 	{	
 		CommandListIndex++;
 		ActionRequired = false;
@@ -1293,7 +1292,6 @@ void RobotControl(Command currcommand) {
 		case TurnLeft:
 			cout << "LEFT TURN CASE" << endl;
 			TurnLeftatintersection();
-
 			break;
 
 		case TurnRight:
@@ -1340,6 +1338,7 @@ int virtualCarInit()
 
 	CommandListIndex = 0;
 	 
+	// TODO REMOVE THIS TESTING CODE
 	CommandList.clear(); 
 	for (int i = 0; i < 30; i++) {
 		CommandList.push_back(TurnLeft);
