@@ -48,6 +48,8 @@ vector<ghostInfoPack> ghostInfoPackList;// can get
 highPerformanceTimer myTimer;
 highPerformanceTimer turnTimer;
 
+highPerformanceTimer straightTimer;
+
 
 /*********************** YUNG FANG FUNCTIONS ***********************/
 
@@ -507,7 +509,7 @@ float DesiredAngle;
 float PreviousAngle;
 
 float upperBoundAngle;
-float lowerBoundAngle
+float lowerBoundAngle;
 
 
 
@@ -614,41 +616,41 @@ void detectIntersection()
 		if (((rightStrength > 1) || (leftStrength > 1)) && (centered == true))
 		{
 			intDetected = true;
-			cout << "Intersection Detected." << endl;
+			//cout << "Intersection Detected." << endl;
 		}
 
 		// Check for a left turn
 		if ((leftStrength > 10) && (rightStrength > 0) && (centered == TRUE))
 		{
-			cout << "Intersection discovered: Left Turn" << endl;
+			//cout << "Intersection discovered: Left Turn" << endl;
 			typeOfInt = 4;
 		}
 		// Check for a right turn
 		else if ((leftStrength > 0) && (rightStrength > 10) && (centered == TRUE))
 		{
-			cout << "Intersection discovered: Right Turn" << endl;
+			//cout << "Intersection discovered: Right Turn" << endl;
 			typeOfInt = 5;
 		}
 	}
-	// If intDetected then check if we have left it
-	else if (intDetected == true)
-	{
-		// Check if we left intersection
-		if ((leftStrength == 0) && (rightStrength == 0) && (centered == TRUE))
-		{
-			cout << "Left intersection" << endl;
-			typeOfInt = 0;
-			intDetected = false;
-		}
-	}
+	//// If intDetected then check if we have left it
+	//else if (intDetected == true)
+	//{
+	//	// Check if we left intersection
+	//	if ((leftStrength == 0) && (rightStrength == 0) && (centered == TRUE))
+	//	{
+	//		cout << "Left intersection" << endl;
+	//		typeOfInt = 0;
+	//		//intDetected = false;
+	//	}
+	//}
 
-	// DEBUGGING: for printing some values to console
-	if (myTimer.getTimer() > 0.5)
-	{
-		myTimer.resetTimer();
-		cout << sensors << endl;
-		cout << "Detected = " << intDetected << endl;
-	}
+	//// DEBUGGING: for printing some values to console
+	//if (myTimer.getTimer() > 0.5)
+	//{
+	//	myTimer.resetTimer();
+	//	cout << sensors << endl;
+	//	cout << "Detected = " << intDetected << endl;
+	//}
 
 	/* OLD CODE, is able to detect a different type of intersection
 	// Inside intersection, redetecting type
@@ -1162,6 +1164,19 @@ void dumbLineFollow()
 	}
 }
 
+
+float wrapAngle(float angle) {
+
+	if (angle >= 360) {
+		angle = angle - 360;
+	}
+	else if (angle < 0) {
+		angle = angle + 360;
+	}
+
+	return angle;
+}
+
 float calculateDesiredAngle(Command current) {
 	float newAngle;
 
@@ -1184,26 +1199,14 @@ float calculateDesiredAngle(Command current) {
 
 }
 
-float wrapAngle(float angle) {
-
-	if (angle > 360) {
-		angle = angle - 360;
-	}
-	else if (angle <= 0) {
-		angle = angle + 360;
-	}
-
-	return angle;
-}
-
 
 void turnLeft()
 {
-	setVirtualCarSpeed(virtualCarLinearSpeed_seed * .1, virtualCarAngularSpeed_seed);
+	setVirtualCarSpeed(virtualCarLinearSpeed_seed * .5, virtualCarAngularSpeed_seed * .8);
 }
 
 void turnRight() {
-	setVirtualCarSpeed(virtualCarLinearSpeed_seed * .1, -virtualCarAngularSpeed_seed);
+	setVirtualCarSpeed(virtualCarLinearSpeed_seed * .5, -virtualCarAngularSpeed_seed * .8);
 }
 
 void goStraight()
@@ -1213,10 +1216,48 @@ void goStraight()
 
 void TurnLeftatintersection() {
 
-	if (currentCarAngle <= lowerBoundAngle && currentCarAngle <= upperBoundAngle) {
+	float difference = wrapAngle(currentCarAngle - PreviousAngle);
+
+	cout << "Difference: " <<  difference << endl;
+
+	if ((difference >= 80) && (difference <= 90)) {
+		cout << "done LEFT TURN" << endl;
+		ActionRequired = false;
+		intDetected = false;
+	}
+	else {
 		turnLeft();
 	}
 
+
+}
+
+void TurnRightatintersection() {
+
+	float difference = wrapAngle(currentCarAngle - PreviousAngle);
+
+	cout << "Difference: " << difference << endl;
+
+	if ((difference >= 80) && (difference <= 90)) {
+		cout << " done RIGHT TURN" << endl;
+		ActionRequired = false;
+		intDetected = false;
+	}
+	else {
+		turnRight();
+	}
+
+
+}
+
+void GoStraighttatintersection() {
+	goStraight();
+	if (straightTimer.getTimer() > 2)
+	{	
+		ActionRequired = false;
+		intDetected = false;
+		
+	}
 
 }
 
@@ -1225,13 +1266,17 @@ void RobotControl(Command currcommand) {
 
 	switch (currcommand) {
 		case TurnLeft:
+			cout << "LEFT TURN CASE" << endl;
 			TurnLeftatintersection();
+
 			break;
 
 		case TurnRight:
+			TurnRightatintersection();
 			break;
 
 		case GoStraight:
+			GoStraighttatintersection();
 			break;
 
 		case Turn180:
@@ -1244,10 +1289,6 @@ void RobotControl(Command currcommand) {
 	}
 
 }
-
-
-
-
 
 
 /******************** CORE FUNCTIONS ********************/
@@ -1269,6 +1310,21 @@ int virtualCarInit()
 	// All our initialisation code is here on out
 
 	CommandListIndex = 0;
+	 
+	CommandList.clear(); 
+	for (int i = 0; i < 30; i++) {
+		CommandList.push_back(TurnLeft);
+		CommandList.push_back(TurnRight);
+		CommandList.push_back(TurnLeft);
+		CommandList.push_back(TurnRight);
+		CommandList.push_back(TurnLeft);
+		CommandList.push_back(TurnRight);
+		CommandList.push_back(TurnLeft);
+		CommandList.push_back(TurnRight);
+		CommandList.push_back(TurnLeft);
+		CommandList.push_back(TurnRight);
+	}
+
 
 	// Get the level from the user
 	cout << "Enter desired level\n0 -> Debug Mode\n1 -> Level 1 Logic\n2 -> Level 2 Logic" << endl;
@@ -1323,7 +1379,7 @@ int virtualCarUpdate()
 	if (level == 0)
 	{
 		//dumbLineFollow();
-		//detectIntersection();
+		detectIntersection();
 		statusReport();
 
 		/*
@@ -1337,19 +1393,25 @@ int virtualCarUpdate()
 
 		// CODE TO TRY AND TURN AT A INTERSECTION
 		//TODO clean up stuff before all this
-		Command current;
+		Command current = CommandList.at(CommandListIndex);
 
 		//RUN ONCE CODE FOR AN ACTION
 		if (intDetected && !ActionRequired) {
 
 			ActionRequired = true;
-			Command current = CommandList.at(CommandListIndex);
+			current = CommandList.at(CommandListIndex);
 			PreviousAngle = currentCarAngle;
+			cout << "Initial Angle: " << PreviousAngle << endl;
 
 			if (current != GoStraight) {
+				cout << "doing a turn" << endl;
 				DesiredAngle = calculateDesiredAngle(current);
 				upperBoundAngle = wrapAngle(DesiredAngle + 10);
 				lowerBoundAngle = wrapAngle(DesiredAngle - 10);
+			}
+			else if (current == GoStraight) {
+				straightTimer.resetTimer();
+
 			}
 			else {
 				;
@@ -1358,6 +1420,9 @@ int virtualCarUpdate()
 
 		if(ActionRequired) {
 			RobotControl(current);
+		}
+		else {
+			dumbLineFollow();
 		}
 	}
 
