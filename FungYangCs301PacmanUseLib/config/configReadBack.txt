@@ -12,5 +12,5 @@
 [numRandomSuperFood] = 5
 [student_practice_mode] = 0
 [writeLogFlag] = 1
-[gameLevel] = 0
+[gameLevel] = 1
 [benchmarkMode] = 0
