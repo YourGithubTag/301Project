@@ -489,38 +489,24 @@ void aStarSearch(int grid[][COL], Pair src, Pair dest)
 
 /*********************** OUR GLOBAL VARIABLES & DATATYPES ***********************/
 
-//// Custom Pair data structure
-//typedef struct {
-//	int x;
-//	int y;
-//} Pair;
-
 // Custom command data typedef
 enum Command { TurnLeft, TurnRight, GoStraight, Turn180, Halt };
 
 //List of commands for robot
 vector<Command> CommandList;
 
+// Stores which command we are currently up to
 int CommandListIndex;
+
+// Marks if we are currently in the middle of dealing with an intersection
 boolean ActionRequired;
 
+// Used for turning
 float DesiredAngle;
 float PreviousAngle;
 
-float upperBoundAngle;
-float lowerBoundAngle;
-
-
-
-
-//vector<Pair> CoordinateList;
-
-// Stores the algorithm output of a vector of Pairs
-//vector<Pair> algoOut;
-
 // Map contains information on each node and its type
 int intersectionmap[15][19];
-
 
 // Inverted map for shortest path algo
 int invertedMap[15][19];
@@ -531,20 +517,8 @@ int visited[15][19];
 // Odered map for level 2 that allows robot to eat food in a given sequence
 int order_map[15][19];
 
-// Keeps track of which level was requested
-int level;
-
 // Bool for if the robot is currently dealing with an intersection
 bool intDetected = false;
-
-// Bool value to keep track of whether the centre sensor is active
-bool followingLine = true;
-
-// Target angle if the car is turning
-int targetAngle = 0;
-
-// Bool flag to check if the car is currently turning
-bool turning = false;
 
 // Variables to store the corners of the map
 Pair topLeft, topRight, botLeft, botRight;
@@ -619,81 +593,23 @@ void detectIntersection()
 		if (((rightStrength > 1) || (leftStrength > 1)) && (centered == true))
 		{
 			intDetected = true;
-			//cout << "Intersection Detected." << endl;
 		}
 
-		// Check for a left turn
-		if ((leftStrength > 10) && (rightStrength > 0) && (centered == TRUE))
-		{
-			cout << "Intersection discovered: Left Turn" << endl;
-		}
-		// Check for a right turn
-		else if ((leftStrength > 0) && (rightStrength > 10) && (centered == TRUE))
-		{
-			cout << "Intersection discovered: Right Turn" << endl;
-		}
 	}
-
-	// DEBUGGING: for printing some values to console
-	/*if (myTimer.getTimer() > 0.5)
-	{
-		myTimer.resetTimer();
-		cout << sensors << endl;
-		cout << "Detected = " << intDetected << endl;
-	}*/
-
-	/* OLD CODE, is able to detect a different type of intersection
-	// Inside intersection, redetecting type
-	else if ((intDetected == true) & (intDecided == true))
-	{
-		// Check if we left intersection
-		if ((leftStrength == 0) && (rightStrength == 0) && (centered == TRUE))
-		{
-			cout << "Left intersection" << endl;
-			typeOfInt = 0;
-			intDetected = false;
-			intDecided = false;
-		}
-		// Recheck for entering the bottom of a T intersection
-		else if ((leftStrength == 111) && (rightStrength == 111) && (centered == TRUE))
-		{
-			cout << "Intersection changed: Bottom of T intersection" << endl;
-			typeOfInt = 1;
-		}
-		// Recheck for entering the left of a T intersection
-		else if ((leftStrength == 10) && (rightStrength > 10))
-		{
-			cout << "Intersection changed: Left of T intersection" << endl;
-			typeOfInt = 1;
-		}
-		// Recheck for entering the right of a T intersection
-		else if ((leftStrength > 10) && (rightStrength == 10))
-		{
-			cout << "Intersection changed: Right of T intersection" << endl;
-			typeOfInt = 1;
-		}
-	}
-	// Should never be reached
-	else
-	{
-		cout << "You shouldn't be here." << endl;
-	}
-	
-	
-
-
-	
-	// Check for a dead end
-	else if ((rightStrength == 0) && (leftStrength == 0) && (centered == FALSE))
-	{
-		intDetected = TRUE;
-		intDecided = TRUE;
-		cout << "Dead End Detected" << endl;
-		//TODO: Add dead end functionality
-	}
-	*/
 
 	return;
+}
+
+float wrapAngle(float angle) {
+
+	if (angle >= 360) {
+		angle = angle - 360;
+	}
+	else if (angle < 0) {
+		angle = angle + 360;
+	}
+
+	return angle;
 }
 
 void FollowInstructions() {
@@ -715,7 +631,10 @@ void FollowInstructions() {
 	Command nextcommand;
 	nextcommand = GoStraight;
 
-	direction = currentCarAngle / 90;
+	direction = wrapAngle(currentCarAngle) / 90;
+
+	cout << "Current direction is " <<  direction << endl;
+
 	if (direction == 0) {
 		direction = 4;
 	}
@@ -831,6 +750,7 @@ void FollowInstructions() {
 				direction = 2;
 			}
 		}
+
 	}
 	nextcommand = Halt;
 	CommandList.push_back(nextcommand);
@@ -838,9 +758,6 @@ void FollowInstructions() {
 		CommandList.erase(CommandList.begin());
 	}
 
-	for (int i = 0; i < CommandList.size(); i++) {
-		cout << "Command = " << CommandList[i] << endl;
-	}
 }
 
 
@@ -1057,10 +974,6 @@ void findMapCorners()
 		}
 	}
 
-	cout << "Top left is " << topLeft.first << ", " << topLeft.second << endl;
-	cout << "Top right is " << topRight.first << ", " << topRight.second << endl;
-	cout << "Bottom left is " << botLeft.first << ", " << botLeft.second << endl;
-	cout << "Bottom right is " << botRight.first << ", " << botRight.second << endl;
 	return;
 }
 
@@ -1078,8 +991,32 @@ void statusReport()
 		cout << "current car X, Y, theta = " << currentCarPosCoord_X << " , " << currentCarPosCoord_Y << " , " << currentCarAngle << endl;
 		cout << "current Cell X, Y = " << coordToCellX(currentCarPosCoord_X) << " , " << coordToCellY(currentCarPosCoord_Y) << endl;
 		cout << "-----------------------------------------" << endl;
+		cout << "Current command index = " << CommandListIndex << endl;
+		cout << "Current command = ";
+		switch (CommandList[CommandListIndex])
+		{
+		case 0:
+			cout << "Turn Left" << endl;
+			break;
+		case 1:
+			cout << "Turn Right" << endl;
+			break;
+		case 2:
+			cout << "Go Straight" << endl;
+			break;
+		case 3:
+			cout << "Turn 180" << endl;
+			break;
+		case 4:
+			cout << "Halt" << endl;
+			break;
+		default:
+			cout << "ERROR" << endl;
+			break;
+		}
+		cout << "=====================================" << endl;
 		// Print out the map containing where we have visited
-		cout << "Visited map" << endl;
+		/*cout << "Visited map" << endl;
 		for (int i = 0; i < 15; ++i)
 		{
 			for (int j = 0; j < 19; ++j)
@@ -1097,7 +1034,7 @@ void statusReport()
 				cout << map[i][j] << ' ';
 			}
 			cout << endl;
-		}
+		}*/
 	}
 	//}---------------------------------------------------------------
 }
@@ -1129,6 +1066,22 @@ void initializeVisitedMap()
 		{
 			visited[i][j] = 1;
 		}
+	}
+}
+
+void ConvertToVisitedMap()
+{
+	//This function runs every tick, gets the currentCarCoord and then converts to Cell.
+	//Convert X-coord into Cell-X
+	int Cell_X = coordToCellX(currentCarPosCoord_X);
+
+	//Convert Y-coord into Cell-Y
+	int Cell_Y = coordToCellY(currentCarPosCoord_Y);
+
+	//Set visited positions to be 1 if not 1 already
+	if ((visited[Cell_Y][Cell_X] == 1) && (map[Cell_Y][Cell_X] == 0))
+	{
+		visited[Cell_Y][Cell_X] = 0;
 	}
 }
 
@@ -1173,30 +1126,6 @@ void updateOrderMap(int i)
 	}
 }
 
-//void getFood()
-//{
-//	for (int i = 0; i < 5; i++) {
-//		aStarSearch(updateOrderMap(i), startpoint, )
-//	}
-	
-//This function runs every tick, gets the currentCarCoord and then converts to Cell.
-void ConvertToVisitedMap()
-{
-	//This function runs every tick, gets the currentCarCoord and then converts to Cell.
-//Convert X-coord into Cell-X
-	int Cell_X = coordToCellX(currentCarPosCoord_X);
-
-	//Convert Y-coord into Cell-Y
-	int Cell_Y = coordToCellY(currentCarPosCoord_Y);
-
-	//Set visited positions to be 1 if not 1 already
-	if ((visited[Cell_Y][Cell_X] == 1) && (map[Cell_Y][Cell_X] == 0))
-	{
-		visited[Cell_Y][Cell_X] = 0;
-	}
-}
-
-//}
 
 // Movement Functions
 void dumbLineFollow()
@@ -1227,19 +1156,6 @@ void dumbLineFollow()
 	}
 }
 
-
-float wrapAngle(float angle) {
-
-	if (angle >= 360) {
-		angle = angle - 360;
-	}
-	else if (angle < 0) {
-		angle = angle + 360;
-	}
-
-	return angle;
-}
-
 float calculateDesiredAngle(Command current) {
 	float newAngle;
 
@@ -1261,7 +1177,6 @@ float calculateDesiredAngle(Command current) {
 	return newAngle;
 
 }
-
 
 void turnLeft()
 {
@@ -1338,27 +1253,22 @@ void turn180() {
 	}
 }
 
-
 void RobotControl(Command currcommand) {
 
 	switch (currcommand) {
 		case TurnLeft:
-		
 			TurnLeftatintersection();
 			break;
 
 		case TurnRight:
-			
 			TurnRightatintersection();
 			break;
 
 		case GoStraight:
-		
 			GoStraighttatintersection();
 			break;
 
 		case Turn180:
-		
 			turn180();
 			break;
 
@@ -1367,7 +1277,6 @@ void RobotControl(Command currcommand) {
 			break;
 
 	}
-
 }
 
 
@@ -1382,34 +1291,14 @@ int virtualCarInit()
 
 	virtualCarLinearSpeed_seed = 0.4;
 	virtualCarAngularSpeed_seed = 50;
-	currentCarPosCoord_X = 6;
-	currentCarPosCoord_Y = -3;
-	currentCarAngle = 361;
+	currentCarPosCoord_X = cellToCoordX(1);
+	currentCarPosCoord_Y = cellToCoordY(1);
+	currentCarAngle = -90;
 
-	// INITIALISATION CODE
+	// INITIALISATION CODE FOR LEVEL 1
+
+	// Clear the current command index
 	CommandListIndex = 0;
-	 
-	// TODO REMOVE THIS TESTING CODE
-	CommandList.clear(); 
-	for (int i = 0; i < 30; i++) {
-		CommandList.push_back(TurnLeft);
-		CommandList.push_back(TurnRight);
-		CommandList.push_back(GoStraight);
-		CommandList.push_back(Turn180);
-		CommandList.push_back(TurnLeft);
-		CommandList.push_back(GoStraight);
-		CommandList.push_back(TurnLeft);
-		CommandList.push_back(Turn180);
-		CommandList.push_back(TurnRight);
-		CommandList.push_back(Turn180);
-		CommandList.push_back(GoStraight);
-		CommandList.push_back(TurnRight);
-	}
-
-
-	// Get the level from the user
-	cout << "Enter desired level\n0 -> Debug Mode\n1 -> Level 1 Logic\n2 -> Level 2 Logic" << endl;
-	cin >> level;
 
 	// Find corners of the given map
 	findMapCorners();
@@ -1423,85 +1312,21 @@ int virtualCarInit()
 	// Initialize the visitedMap
 	initializeVisitedMap();
 
-	// Call the shortest path algorithm between the four corners of the map
-	/*Pair src = { 1, 1 };
-	Pair dest = { 13, 17 };
-	aStarSearch(invertedMap, src, dest);*/
-
-	//Shortest path form top left to bottom right
-	aStarSearch(invertedMap, topLeft, botRight);
+	// Call the shortest path algorithm between the four corners of the map in an hourglass shape
+	aStarSearch(invertedMap, topLeft, topRight);
 	algoOut.pop_back();
-
-	//Shortest path form bottom right to top right
-	aStarSearch(invertedMap, botRight, topRight);
-	algoOut.pop_back();
-
-	//Shortest path form top right to bottom left
 	aStarSearch(invertedMap, topRight, botLeft);
-	//algoOut.pop_back();
-
-	/*cout << "We are testing multiple astar calls";
-
-	for (int i = 0; i < algoOut.size(); i++) {
-		cout << "Next = " << algoOut[i].first << "," << algoOut[i].second << endl;
-	}*/
-
-	initialiseOrderMap();
-	for (int i = 0; i < 15; ++i)
-	{
-		for (int j = 0; j < 19; ++j)
-		{
-			cout << order_map[i][j] << ' ';
-		}
-		cout << endl;
-	}
-	cout << "===============================================" << endl;
-	updateOrderMap(0);
-	for (int i = 0; i < 15; ++i)
-	{
-		for (int j = 0; j < 19; ++j)
-		{
-			cout << order_map[i][j] << ' ';
-		}
-		cout << endl;
-	}
-	cout << "===============================================" << endl;
-	updateOrderMap(1);
-	updateOrderMap(2);
-	updateOrderMap(3);
-	for (int i = 0; i < 15; ++i)
-	{
-		for (int j = 0; j < 19; ++j)
-		{
-			cout << order_map[i][j] << ' ';
-		}
-		cout << endl;
-	}
-	cout << "===============================================" << endl;
+	algoOut.pop_back();
+	aStarSearch(invertedMap, botLeft, botRight);
+	algoOut.pop_back();
+	aStarSearch(invertedMap, botRight, topLeft);
 
 	// Convert algorithm output to robot instructions
 	FollowInstructions();
 
-	// DEBUGGING CODE
-
-	//// Print out the map containing intersections
-	//for (int i = 0; i < 15; ++i)
-	//{
-	//	for (int j = 0; j < 19; ++j)
-	//	{
-	//		cout << intersectionmap[i][j] << ' ';
-	//	}
-	//	cout << endl;
-	//}
-
-	/*for (int i = 0; i < algoOut.size(); i++)
-	{
-		cout << "(" << algoOut[i].first << "," << algoOut[i].second << ") -> ";
-	}
-	cout << endl;
-	*/
-
-	cout << "===============================================" << endl;
+	// Output sizes for both global lists
+	cout << "Command List Size = " << CommandList.size() << endl;
+	cout << "Algorithm Output List Size = " << algoOut.size() << endl;
 
 	return 1;
 }
@@ -1511,74 +1336,45 @@ int virtualCarUpdate()
 	float linspeed = virtualCarLinearSpeed_seed;
 	float angspeed = virtualCarAngularSpeed_seed;
 
-	// DEBUG
-	if (level == 0)
-	{
-		//dumbLineFollow();
-		detectIntersection();
-		statusReport();
+	// TICK CODE FOR LEVEL 1
 
-		/*
-		if (myTimer.getTimer() > 0.5)
-		{
-			myTimer.resetTimer();
+	// Check for an intersection every tick
+	detectIntersection();
 
-			turnLeft90OnSpot();
+	// For debugging reasons
+	statusReport();
+
+	// Keep track of where we have been
+	ConvertToVisitedMap();
+
+
+	Command current = CommandList.at(CommandListIndex);
+
+	// If an intersection is detected, begin dealing with it
+	if (intDetected && !ActionRequired) {
+		ActionRequired = true;
+		current = CommandList.at(CommandListIndex);
+		PreviousAngle = currentCarAngle;
+		cout << "Initial Angle: " << PreviousAngle << endl;
+
+		if (current != GoStraight) {
+			DesiredAngle = calculateDesiredAngle(current);
 		}
-		*/
-
-		// CODE TO TRY AND TURN AT A INTERSECTION
-		//TODO clean up stuff before all this
-		Command current = CommandList.at(CommandListIndex);
-
-		//RUN ONCE CODE FOR AN ACTION
-		if (intDetected && !ActionRequired) {
-			ActionRequired = true;
-			current = CommandList.at(CommandListIndex);
-			PreviousAngle = currentCarAngle;
-			cout << "Initial Angle: " << PreviousAngle << endl;
-
-			if (current != GoStraight) {
-				cout << "doing a turn" << endl;
-				DesiredAngle = calculateDesiredAngle(current);
-				upperBoundAngle = wrapAngle(DesiredAngle + 10);
-				lowerBoundAngle = wrapAngle(DesiredAngle - 10);
-			}
-			else if (current == GoStraight) {
-				straightTimer.resetTimer();
-
-			}
-			else {
-				;
-			}
-		}
-
-		if(ActionRequired) {
-			RobotControl(current);
-		}
-		else {
-			dumbLineFollow();
+		else if (current == GoStraight) {
+			straightTimer.resetTimer();
 		}
 	}
 
-	// Level 1
-	else if (level == 1)
-	{
-
+	// If we are dealing with a turn, work with the current command
+	if(ActionRequired) {
+		RobotControl(current);
+	}
+	// If we aren't turning then just follow the line
+	else {
+		dumbLineFollow();
 	}
 
-	// Level 2
-	else if (level == 2)
-	{
 
-	}
-
-	else
-	{
-		cout << "Invalid level number." << endl;
-		return 1;
-	}
-	
 	return 1;
 }
 
