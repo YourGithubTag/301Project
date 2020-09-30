@@ -521,6 +521,9 @@ float lowerBoundAngle;
 // Map contains information on each node and its type
 int intersectionmap[15][19];
 
+// Create CommandListIndex
+int CommandListIndex;
+
 // Inverted map for shortest path algo
 int invertedMap[15][19];
 
