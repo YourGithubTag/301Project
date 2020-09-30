@@ -1,26 +1,8 @@
 // A C++ Program to implement A* Search Algorithm 
-#include<bits/stdc++.h> 
-using namespace std;
+#include "astar.h"
 
-#define ROW 9 
-#define COL 10 
-
-// Creating a shortcut for int, int pair type 
-typedef pair<int, int> Pair;
-// Creating a shortcut for pair<int, pair<int, int>> type 
-typedef pair<double, pair<int, int>> pPair;
-
-vector<Pair> coordinates;
-
-// A structure to hold the neccesary parameters 
-struct cell
-{
-	// Row and Column index of its parent 
-	// Note that 0 <= i <= ROW-1 & 0 <= j <= COL-1 
-	int parent_i, parent_j;
-	// f = g + h 
-	double f, g, h;
-};
+#define ROW 15
+#define COL 19
 
 // A Utility Function to check whether given cell (row, col) 
 // is a valid cell or not. 
@@ -80,17 +62,17 @@ void tracePath(cell cellDetails[][COL], Pair dest)
 		row = temp_row;
 		col = temp_col;
 	}
-	CoordinateList c;
+	
 	Path.push(make_pair(row, col));
 	while (!Path.empty())
 	{
-		pair<int, int> p = Path.top();
-		c.push_back(p);
+		//pair<int, int> p = Path.top();
+		Pair p = Path.top();
+		algoOut.push_back(p);
 		Path.pop();
 		printf("-> (%d,%d) ", p.first, p.second);
 	}
 
-	coordinates = c;
 
 	return;
 }
@@ -98,7 +80,7 @@ void tracePath(cell cellDetails[][COL], Pair dest)
 // A Function to find the shortest path between 
 // a given source cell to a destination cell according 
 // to A* Search Algorithm 
-vector<Pair> aStarSearch(int grid[][COL], Pair src, Pair dest)
+void aStarSearch(int grid[][COL], Pair src, Pair dest)
 {
 	// If the source is out of range 
 	if (isValid(src.first, src.second) == false)
@@ -416,36 +398,5 @@ vector<Pair> aStarSearch(int grid[][COL], Pair src, Pair dest)
 	if (foundDest == false)
 		printf("Failed to find the Destination Cell\n");
 
-	return coordinates;
-}
-
-
-// Driver program to test above function 
-int main()
-{
-	/* Description of the Grid-
-	1--> The cell is not blocked
-	0--> The cell is blocked */
-	int grid[ROW][COL] =
-	{
-		{ 1, 0, 1, 1, 1, 1, 0, 1, 1, 1 },
-		{ 1, 1, 1, 0, 1, 1, 1, 0, 1, 1 },
-		{ 1, 1, 1, 0, 1, 1, 0, 1, 0, 1 },
-		{ 0, 0, 1, 0, 1, 0, 0, 0, 0, 1 },
-		{ 1, 1, 1, 0, 1, 1, 1, 0, 1, 0 },
-		{ 1, 0, 1, 1, 1, 1, 0, 1, 0, 0 },
-		{ 1, 0, 0, 0, 0, 1, 0, 0, 0, 1 },
-		{ 1, 0, 1, 1, 1, 1, 0, 1, 1, 1 },
-		{ 1, 1, 1, 0, 0, 0, 1, 0, 0, 1 }
-	};
-
-	// Source is the left-most bottom-most corner 
-	Pair src = make_pair(8, 0);
-
-	// Destination is the left-most top-most corner 
-	Pair dest = make_pair(0, 0);
-
-	aStarSearch(grid, src, dest);
-
-	return(0);
+	return;
 }
