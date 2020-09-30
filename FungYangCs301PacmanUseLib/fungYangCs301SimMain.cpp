@@ -500,11 +500,6 @@ enum Command { TurnLeft, TurnRight, GoStraight, Turn180, Halt };
 //List of commands for robot
 vector<Command> CommandList;
 
-//vector<Pair> CoordinateList;
-
-// Stores the algorithm output of a vector of Pairs
-//vector<Pair> algoOut;
-
 // Map contains information on each node and its type
 int intersectionmap[15][19];
 
@@ -1201,22 +1196,22 @@ int virtualCarInit()
 	// Convert algorithm output to robot instructions
 	//FollowInstructions();
 
-	// Print out the map containing intersections
-	for (int i = 0; i < 15; ++i)
-	{
-		for (int j = 0; j < 19; ++j)
-		{
-			cout << intersectionmap[i][j] << ' ';
-		}
-		cout << endl;
-	}
+	//// Print out the map containing intersections
+	//for (int i = 0; i < 15; ++i)
+	//{
+	//	for (int j = 0; j < 19; ++j)
+	//	{
+	//		cout << intersectionmap[i][j] << ' ';
+	//	}
+	//	cout << endl;
+	//}
 
 
-	for (int i = 0; i < algoOut.size(); i++)
+	/*for (int i = 0; i < algoOut.size(); i++)
 	{
 		cout << "(" << algoOut[i].first << "," << algoOut[i].second << ") -> ";
-	}
-	cout << endl;
+	}*/
+	//cout << endl;
 
 	cout << "===============================================" << endl;
 
