@@ -1222,11 +1222,8 @@ void TurnLeftatintersection() {
 
 	float difference = wrapAngle(currentCarAngle - PreviousAngle);
 
-	cout << "Difference: " <<  difference << endl;
-
 	if ((difference >= 85) && (difference <= 90)) {
 		CommandListIndex++;
-		cout << "done LEFT TURN" << endl;
 		ActionRequired = false;
 		intDetected = false;
 	}
@@ -1241,11 +1238,8 @@ void TurnRightatintersection() {
 
 	float difference = wrapAngle(PreviousAngle - currentCarAngle);
 
-	cout << "Difference: " << difference << endl;
-
 	if ((difference >= 85) && (difference <= 90)) {
 		CommandListIndex++;
-		cout << " done RIGHT TURN" << endl;
 		ActionRequired = false;
 		intDetected = false;
 	}
@@ -1257,7 +1251,6 @@ void TurnRightatintersection() {
 
 void GoStraighttatintersection() {
 	goStraight();
-	cout << "straight" << endl;
 	if (straightTimer.getTimer() > 0.5)
 	{	
 		CommandListIndex++;
@@ -1272,11 +1265,8 @@ void turn180() {
 
 	float difference = wrapAngle(currentCarAngle - PreviousAngle);
 
-	cout << "Difference: " << difference << endl;
-
 	if ((difference >= 170) && (difference <= 190)) {
 		CommandListIndex++;
-		cout << "180" << endl;
 		ActionRequired = false;
 		intDetected = false;
 	}
@@ -1290,22 +1280,22 @@ void RobotControl(Command currcommand) {
 
 	switch (currcommand) {
 		case TurnLeft:
-			cout << "LEFT TURN CASE" << endl;
+		
 			TurnLeftatintersection();
 			break;
 
 		case TurnRight:
-			cout << "RIGHT TURN CASE" << endl;
+			
 			TurnRightatintersection();
 			break;
 
 		case GoStraight:
-			cout << "straight  CASE" << endl;
+		
 			GoStraighttatintersection();
 			break;
 
 		case Turn180:
-			cout << "180  CASE" << endl;
+		
 			turn180();
 			break;
 
