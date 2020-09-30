@@ -485,7 +485,6 @@ void aStarSearch(int grid[][COL], Pair src, Pair dest)
 }
 
 
-
 /*********************** OUR GLOBAL VARIABLES & DATATYPES ***********************/
 
 //// Custom Pair data structure
@@ -605,34 +604,21 @@ void detectIntersection()
 		if ((leftStrength > 10) && (rightStrength > 0) && (centered == TRUE))
 		{
 			cout << "Intersection discovered: Left Turn" << endl;
-			typeOfInt = 4;
 		}
 		// Check for a right turn
 		else if ((leftStrength > 0) && (rightStrength > 10) && (centered == TRUE))
 		{
 			cout << "Intersection discovered: Right Turn" << endl;
-			typeOfInt = 5;
-		}
-	}
-	// If intDetected then check if we have left it
-	else if (intDetected == true)
-	{
-		// Check if we left intersection
-		if ((leftStrength == 0) && (rightStrength == 0) && (centered == TRUE))
-		{
-			cout << "Left intersection" << endl;
-			typeOfInt = 0;
-			intDetected = false;
 		}
 	}
 
 	// DEBUGGING: for printing some values to console
-	if (myTimer.getTimer() > 0.5)
+	/*if (myTimer.getTimer() > 0.5)
 	{
 		myTimer.resetTimer();
 		cout << sensors << endl;
 		cout << "Detected = " << intDetected << endl;
-	}
+	}*/
 
 	/* OLD CODE, is able to detect a different type of intersection
 	// Inside intersection, redetecting type
@@ -1081,20 +1067,26 @@ void statusReport()
 		cout << "current car X, Y, theta = " << currentCarPosCoord_X << " , " << currentCarPosCoord_Y << " , " << currentCarAngle << endl;
 		cout << "current Cell X, Y = " << coordToCellX(currentCarPosCoord_X) << " , " << coordToCellY(currentCarPosCoord_Y) << endl;
 		cout << "-----------------------------------------" << endl;
-		cout << " ghost list info:" << endl;
-		for (int i = 0; i < ghostInfoPackList.size(); i++)
+		// Print out the map containing where we have visited
+		cout << "Visited map" << endl;
+		for (int i = 0; i < 15; ++i)
 		{
-			cout << "g[" << i << "]: (" << ghostInfoPackList[i].coord_x << ", " << ghostInfoPackList[i].coord_y << "); [s=" <<
-				ghostInfoPackList[i].speed << "; [d=" << ghostInfoPackList[i].direction << "]; [T=" << ghostInfoPackList[i].ghostType << "]" << endl;
+			for (int j = 0; j < 19; ++j)
+			{
+				cout << visited[i][j] << ' ';
+			}
+			cout << endl;
 		}
-		cout << "-----------------------------------------" << endl;
-		int randNumber = rand_nextInt(10);
-		cout << " a rand number between 0 ~ 10 = " << randNumber << endl;
-		randNumber = rand_nextInt(10, 20);
-		cout << " a rand number between 10 ~ 20 = " << randNumber << endl;
-		cout << "-----------------------------------------" << endl;
-		cout << "map[0][9] = " << map[0][9] << endl;
-		cout << "food_list[5][0] = " << food_list[5][0] << endl;
+
+		cout << "Completed map" << endl;
+		for (int i = 0; i < 15; ++i)
+		{
+			for (int j = 0; j < 19; ++j)
+			{
+				cout << map[i][j] << ' ';
+			}
+			cout << endl;
+		}
 	}
 	//}---------------------------------------------------------------
 }
@@ -1116,6 +1108,35 @@ void invertMap()
 		}
 	}
 }
+
+void initializeVisitedMap()
+{
+	//visited map (15x19) is initialised with all Zeros
+	for (int i = 0; i < 15; i++)
+	{
+		for (int j = 0; j < 19; j++)
+		{
+			visited[i][j] = 1;
+		}
+	}
+}
+
+void ConvertToVisitedMap()
+{
+	//This function runs every tick, gets the currentCarCoord and then converts to Cell.
+	//Convert X-coord into Cell-X
+	int Cell_X = coordToCellX(currentCarPosCoord_X);
+
+	//Convert Y-coord into Cell-Y
+	int Cell_Y = coordToCellY(currentCarPosCoord_Y);
+
+	//Set visited positions to be 1 if not 1 already
+	if ((visited[Cell_Y][Cell_X] == 1) && (map[Cell_Y][Cell_X] == 0))
+	{
+		visited[Cell_Y][Cell_X] = 0;
+	}
+}
+
 
 // Movement Functions
 void dumbLineFollow()
@@ -1205,11 +1226,9 @@ int virtualCarInit()
 	virtualCarAngularSpeed_seed = 50;
 	currentCarPosCoord_X = 6;
 	currentCarPosCoord_Y = -3;
-	currentCarAngle = 90;
+	currentCarAngle = 361;
 
-
-	// All our initialisation code is here on out
-
+	// INITIALISATION CODE
 	CommandListIndex = 0;
 
 	// Get the level from the user
@@ -1225,6 +1244,9 @@ int virtualCarInit()
 	// Invert the given map
 	invertMap();
 
+	// Initialize the visitedMap
+	initializeVisitedMap();
+
 	// Call the shortest path algorithm between the four corners of the map
 	Pair src = { 1, 1 };
 	Pair dest = { 13, 17 };
@@ -1232,6 +1254,8 @@ int virtualCarInit()
 
 	// Convert algorithm output to robot instructions
 	// FollowInstructions();
+
+	// DEBUGGING CODE
 
 	//// Print out the map containing intersections
 	//for (int i = 0; i < 15; ++i)
@@ -1242,7 +1266,6 @@ int virtualCarInit()
 	//	}
 	//	cout << endl;
 	//}
-
 
 	/*for (int i = 0; i < algoOut.size(); i++)
 	{
@@ -1263,8 +1286,9 @@ int virtualCarUpdate()
 	// DEBUG
 	if (level == 0)
 	{
-		//dumbLineFollow();
+		dumbLineFollow();
 		//detectIntersection();
+		ConvertToVisitedMap();
 		statusReport();
 
 		/*
@@ -1297,36 +1321,6 @@ int virtualCarUpdate()
 	}
 	
 	return 1;
-}
-
-
-//This function runs every tick, gets the currentCarCoord and then converts to Cell.
-void ConvertToVisitedMap() 
-{
-	//visited map (15x19) is initialised with all Zeros
-	for (int i = 0; i < 15; i++)
-	{
-		for (int j = 0; j < 19; j++)
-		{
-			visited[i][j] = 0;
-		}
-	}
-
-	// Runs through every tick?????
-	if (myTimer.getTimer() > 1)
-	{
-		myTimer.resetTimer();
-
-		//Convert X-coord into Cell-X
-		int Cell_X = coordToCellX(currentCarPosCoord_X);
-
-		//Convert Y-coord into Cell-Y
-		int Cell_Y = coordToCellY(currentCarPosCoord_Y);
-
-		//Set visited positions to be 1
-		visited[Cell_X][Cell_Y] = 1;
-
-	}
 }
 
 
