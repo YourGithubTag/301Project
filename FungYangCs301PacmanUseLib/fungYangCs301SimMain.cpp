@@ -85,6 +85,9 @@ int intersectionmap[15][19];
 // Inverted map for shortest path algo
 int invertedMap[15][19];
 
+//A NEW Map (15x19) recording the positions that the Car has been to
+int visited[15][19];
+
 // Keeps track of which level was requested
 int level;
 
@@ -104,7 +107,7 @@ bool turning = false;
 Pair topLeft, topRight, botLeft, botRight;
 
 // Integer for what type of intersection has been detected
-// 0 - no inter, 1 - T from bottom, 2 - T from left, 3 - T from right, 4 - Left Turn, 5 - Right Turn, 6 - Dead end
+// 0=no inter, 1=T from bottom, 2=T from left, 3=T from right, 4=Left Turn, 5=Right Turn, 6=Dead end
 int typeOfInt = 0;
 
 
@@ -837,12 +840,11 @@ int virtualCarUpdate()
 //This function runs every tick, gets the currentCarCoord and then converts to Cell.
 void ConvertToVisitedMap() 
 {
-	//A NEW Map (15x19) recording the positions that the Car has been to
-	int visited[15][19];
-
 	//visited map (15x19) is initialised with all Zeros
-	for (int i = 0; i < 15; i++) {
-		for (int j = 0; j < 19; j++) {
+	for (int i = 0; i < 15; i++)
+	{
+		for (int j = 0; j < 19; j++)
+		{
 			visited[i][j] = 0;
 		}
 	}
