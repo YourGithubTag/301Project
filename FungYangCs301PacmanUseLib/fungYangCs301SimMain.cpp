@@ -521,8 +521,6 @@ float lowerBoundAngle;
 // Map contains information on each node and its type
 int intersectionmap[15][19];
 
-// Create CommandListIndex
-int CommandListIndex;
 
 // Inverted map for shortest path algo
 int invertedMap[15][19];
@@ -1122,6 +1120,18 @@ void invertMap()
 	}
 }
 
+void initializeVisitedMap()
+{
+	//visited map (15x19) is initialised with all Zeros
+	for (int i = 0; i < 15; i++)
+	{
+		for (int j = 0; j < 19; j++)
+		{
+			visited[i][j] = 1;
+		}
+	}
+}
+
 void initialiseOrderMap()
 {
 	// Initialise a map where all the food is treated as a wall
@@ -1169,7 +1179,22 @@ void updateOrderMap(int i)
 //		aStarSearch(updateOrderMap(i), startpoint, )
 //	}
 	
+//This function runs every tick, gets the currentCarCoord and then converts to Cell.
+void ConvertToVisitedMap()
+{
+	//This function runs every tick, gets the currentCarCoord and then converts to Cell.
+//Convert X-coord into Cell-X
+	int Cell_X = coordToCellX(currentCarPosCoord_X);
 
+	//Convert Y-coord into Cell-Y
+	int Cell_Y = coordToCellY(currentCarPosCoord_Y);
+
+	//Set visited positions to be 1 if not 1 already
+	if ((visited[Cell_Y][Cell_X] == 1) && (map[Cell_Y][Cell_X] == 0))
+	{
+		visited[Cell_Y][Cell_X] = 0;
+	}
+}
 
 //}
 
@@ -1556,39 +1581,6 @@ int virtualCarUpdate()
 	
 	return 1;
 }
-
-
-//This function runs every tick, gets the currentCarCoord and then converts to Cell.
-void ConvertToVisitedMap() 
-{
-	//visited map (15x19) is initialised with all Zeros
-	for (int i = 0; i < 15; i++)
-	{
-		for (int j = 0; j < 19; j++)
-		{
-			visited[i][j] = 0;
-		}
-	}
-
-	// Runs through every tick?????
-	if (myTimer.getTimer() > 1)
-	{
-		myTimer.resetTimer();
-
-		//Convert X-coord into Cell-X
-		int Cell_X = coordToCellX(currentCarPosCoord_X);
-
-		//Convert Y-coord into Cell-Y
-		int Cell_Y = coordToCellY(currentCarPosCoord_Y);
-
-		//Set visited positions to be 1
-		visited[Cell_X][Cell_Y] = 1;
-
-	}
-}
-
-
-
 
 
 int main(int argc, char** argv)
