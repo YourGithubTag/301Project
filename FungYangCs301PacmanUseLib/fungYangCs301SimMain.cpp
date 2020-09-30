@@ -504,6 +504,12 @@ vector<Command> CommandList;
 // Stores the algorithm output of a vector of Pairs
 //vector<Pair> algoOut;
 
+float upperBoundAngle;
+float lowerBoundAngle
+
+
+
+
 // Map contains information on each node and its type
 int intersectionmap[15][19];
 
@@ -1160,6 +1166,40 @@ void dumbLineFollow()
 	}
 }
 
+float wrapAngle(float angle) {
+	float returnAngle;
+	if (angle > 360) {
+		returnAngle = angle - 360;
+	}
+	else if (angle <= 0) {
+		returnAngle = angle + 360;
+	}
+
+	return returnAngle;
+}
+
+float calculateDesiredAngle(Command current) {
+	float newAngle;
+
+	switch (current) {
+	case TurnLeft:
+		newAngle = PreviousAngle + 90;
+		break;
+
+	case TurnRight:
+		newAngle = PreviousAngle - 90;
+		break;
+
+	case Turn180:
+		newAngle = PreviousAngle + 180;
+		break; 
+	}
+	newAngle = wrapAngle(newAngle);
+	return newAngle;
+
+}
+
+
 void turnLeft()
 {
 	setVirtualCarSpeed(virtualCarLinearSpeed_seed * .1, virtualCarAngularSpeed_seed);
@@ -1174,6 +1214,42 @@ void goStraight()
 	setVirtualCarSpeed(virtualCarLinearSpeed_seed, 0);
 }
 
+
+	float difference = wrapAngle(currentCarAngle - PreviousAngle);
+
+	if ( (difference >= 80) || (difference <= 100) ) {
+		CommandListIndex++;
+		intDetected = false;
+		ActionRequired = false;
+
+	}
+	else {
+		turnLeft();
+	}
+
+}
+
+
+void RobotControl(Command currcommand) {
+	switch (currcommand) {
+		case TurnLeft:
+			TurnLeftatintersection();
+			break;
+
+		case TurnRight:
+			break;
+
+		case GoStraight:
+			break;
+
+		case Turn180:
+			break;
+
+			//TODO: HALT STUFF
+		case Halt:
+			break;
+	}
+}
 
 /******************** CORE FUNCTIONS ********************/
 
@@ -1192,6 +1268,18 @@ int virtualCarInit()
 
 	// INITIALISATION CODE
 	CommandListIndex = 0;
+	CommandList.clear();
+
+	CommandList.push_back(TurnLeft);
+	CommandList.push_back(TurnLeft);
+	CommandList.push_back(TurnLeft);
+	CommandList.push_back(TurnLeft);
+	CommandList.push_back(TurnLeft);
+	CommandList.push_back(TurnLeft);
+	CommandList.push_back(TurnLeft);
+	CommandList.push_back(TurnLeft);
+	CommandList.push_back(TurnLeft);
+
 
 	// Get the level from the user
 	cout << "Enter desired level\n0 -> Debug Mode\n1 -> Level 1 Logic\n2 -> Level 2 Logic" << endl;
@@ -1266,9 +1354,8 @@ int virtualCarUpdate()
 	// DEBUG
 	if (level == 0)
 	{
-		dumbLineFollow();
-		//detectIntersection();
-		ConvertToVisitedMap();
+		//dumbLineFollow();
+		detectIntersection();
 		statusReport();
 
 		/*
@@ -1279,6 +1366,35 @@ int virtualCarUpdate()
 			turnLeft90OnSpot();
 		}
 		*/
+
+		// CODE TO TRY AND TURN AT A INTERSECTION
+		//TODO clean up stuff before all this
+		Command current = CommandList[0];
+		ActionRequired = false;
+
+
+		//RUN ONCE CODE FOR AN ACTION
+		if (intDetected && !ActionRequired) {
+			ActionRequired = true;
+			current = CommandList[CommandListIndex];
+			PreviousAngle = currentCarAngle;
+
+			if (current != GoStraight) {
+				DesiredAngle = calculateDesiredAngle(current);
+			}
+			else {
+				;
+			}
+		}
+		if (ActionRequired) {
+			RobotControl(current);
+		}
+
+		else {
+			dumbLineFollow();
+		} 
+
+
 	}
 
 	// Level 1
