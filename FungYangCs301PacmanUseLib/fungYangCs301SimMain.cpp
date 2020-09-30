@@ -498,7 +498,11 @@ enum Command { TurnLeft, TurnRight, GoStraight, Turn180, Halt };
 
 //List of commands for robot
 vector<Command> CommandList;
-int CommandListIndex;
+
+//vector<Pair> CoordinateList;
+
+// Stores the algorithm output of a vector of Pairs
+//vector<Pair> algoOut;
 
 // Map contains information on each node and its type
 int intersectionmap[15][19];
@@ -690,13 +694,8 @@ void FollowInstructions() {
 	
 	// CURRENT DIRECTION, NOTE THAT 1 = going right, 2 = going up, 3 = going left, 4 = going down
 	int direction = 0;
-	Pair currlocation;
-	Pair nextlocation;
 	Command nextcommand;
 	nextcommand = GoStraight;
-
-	nextlocation.first = 1;
-	nextlocation.second = 1;
 
 	direction = currentCarAngle / 90;
 	if (direction == 0) {
@@ -715,25 +714,22 @@ void FollowInstructions() {
 				i++;
 			}
 			// Instructions for turning right
-			if ((algoOut[i].first) == (algoOut[i + 1].first) && algoOut[i].second == (algoOut[i + 1].second + 1)) {
+			if ((algoOut[i].first) == (algoOut[i + 1].first) && algoOut[i].second == (algoOut[i + 1].second - 1)) {
 				nextcommand = TurnRight;
 				CommandList.push_back(nextcommand);
 				direction = 4;
-				i++;
 			}
 			// Instructions for turning left
-			if ((algoOut[i].first) == (algoOut[i + 1].first) && algoOut[i].second == (algoOut[i + 1].second - 1)) {
+			if ((algoOut[i].first) == (algoOut[i + 1].first) && algoOut[i].second == (algoOut[i + 1].second + 1)) {
 				nextcommand = TurnLeft;
 				CommandList.push_back(nextcommand);
 				direction = 2;
-				i++;
 			}
 			// Instructions for turning 180
 			if ((algoOut[i].first == ((algoOut[i + 1].first) - 1)) && (algoOut[i + 1].second == algoOut[i].second)) {
 				nextcommand = Turn180;
 				CommandList.push_back(nextcommand);
 				direction = 3;
-				i++;
 			}
 		}
 		else if (direction == 2) {
@@ -749,21 +745,18 @@ void FollowInstructions() {
 				nextcommand = TurnRight;
 				CommandList.push_back(nextcommand);
 				direction = 1;
-				i++;
 			}
 			// Instructions for turning left
 			if ((algoOut[i].first) == (algoOut[i + 1].first - 1) && algoOut[i].second == (algoOut[i + 1].second)) {
 				nextcommand = TurnLeft;
 				CommandList.push_back(nextcommand);
 				direction = 3;
-				i++;
 			}
 			// Instructions for turning 180
 			if ((algoOut[i].first == algoOut[i + 1].first) && (algoOut[i].second == algoOut[i + 1].second - 1)) {
 				nextcommand = Turn180;
 				CommandList.push_back(nextcommand);
 				direction = 4;
-				i++;
 			}
 		}
 		else if (direction == 3) {
@@ -779,21 +772,18 @@ void FollowInstructions() {
 				nextcommand = TurnRight;
 				CommandList.push_back(nextcommand);
 				direction = 2;
-				i++;
 			}
 			// Instructions for turning left
 			if ((algoOut[i].first) == (algoOut[i + 1].first) && algoOut[i].second == (algoOut[i + 1].second - 1)) {
 				nextcommand = TurnLeft;
 				CommandList.push_back(nextcommand);
 				direction = 4;
-				i++;
 			}
 			// Instructions for turning 180
 			if ((algoOut[i].first == ((algoOut[i + 1].first) + 1)) && (algoOut[i + 1].second == algoOut[i].second)) {
 				nextcommand = Turn180;
 				CommandList.push_back(nextcommand);
 				direction = 1;
-				i++;
 			}
 		}
 		else if (direction == 4) {
@@ -809,27 +799,30 @@ void FollowInstructions() {
 				nextcommand = TurnRight;
 				CommandList.push_back(nextcommand);
 				direction = 3;
-				i++;
 			}
 			// Instructions for turning left
 			if ((algoOut[i].first) == (algoOut[i + 1].first + 1) && algoOut[i].second == (algoOut[i + 1].second)) {
 				nextcommand = TurnLeft;
 				CommandList.push_back(nextcommand);
 				direction = 1;
-				i++;
 			}
 			// Instructions for turning 180
 			if ((algoOut[i].first == algoOut[i + 1].first) && (algoOut[i].second == algoOut[i + 1].second + 1)) {
 				nextcommand = Turn180;
 				CommandList.push_back(nextcommand);
 				direction = 2;
-				i++;
 			}
 		}
 	}
 	nextcommand = Halt;
 	CommandList.push_back(nextcommand);
-		
+	if (CommandList[0] == GoStraight) {
+		CommandList.erase(CommandList.begin());
+	}
+
+	for (int i = 0; i < CommandList.size(); i++) {
+		cout << "Command = " << CommandList[i] << endl;
+	}
 }
 
 
@@ -1182,37 +1175,6 @@ void goStraight()
 }
 
 
-
-void RobotControl() {
-	Command current = CommandList.at(CommandListIndex);
-
-	switch (current) {
-		case TurnLeft:
-			break;
-
-		case TurnRight:
-			break;
-
-		case GoStraight:
-			break;
-
-		case Turn180:
-			break;
-
-			//TODO: HALT STUFF
-		case Halt:
-			break;
-
-	}
-
-
-
-
-}
-
-
-
-
 /******************** CORE FUNCTIONS ********************/
 
 int virtualCarInit()
@@ -1248,12 +1210,30 @@ int virtualCarInit()
 	initializeVisitedMap();
 
 	// Call the shortest path algorithm between the four corners of the map
-	Pair src = { 1, 1 };
+	/*Pair src = { 1, 1 };
 	Pair dest = { 13, 17 };
-	aStarSearch(invertedMap, src, dest);
+	aStarSearch(invertedMap, src, dest);*/
+
+	//Shortest path form top left to bottom right
+	aStarSearch(invertedMap, topLeft, botRight);
+	algoOut.pop_back();
+
+	//Shortest path form bottom right to top right
+	aStarSearch(invertedMap, botRight, topRight);
+	algoOut.pop_back();
+
+	//Shortest path form top right to bottom left
+	aStarSearch(invertedMap, topRight, botLeft);
+	//algoOut.pop_back();
+
+	cout << "We are testing multiple astar calls";
+
+	for (int i = 0; i < algoOut.size(); i++) {
+		cout << "Next = " << algoOut[i].first << "," << algoOut[i].second << endl;
+	}
 
 	// Convert algorithm output to robot instructions
-	// FollowInstructions();
+	FollowInstructions();
 
 	// DEBUGGING CODE
 
@@ -1270,8 +1250,8 @@ int virtualCarInit()
 	/*for (int i = 0; i < algoOut.size(); i++)
 	{
 		cout << "(" << algoOut[i].first << "," << algoOut[i].second << ") -> ";
-	}*/
-	//cout << endl;
+	}
+	cout << endl;
 
 	cout << "===============================================" << endl;
 
@@ -1304,7 +1284,6 @@ int virtualCarUpdate()
 	// Level 1
 	else if (level == 1)
 	{
-
 
 	}
 
