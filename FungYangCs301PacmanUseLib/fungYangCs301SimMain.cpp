@@ -48,6 +48,8 @@ vector<ghostInfoPack> ghostInfoPackList;// can get
 highPerformanceTimer myTimer;
 highPerformanceTimer turnTimer;
 
+highPerformanceTimer straightTimer;
+
 
 /*********************** YUNG FANG FUNCTIONS ***********************/
 
@@ -499,6 +501,18 @@ enum Command { TurnLeft, TurnRight, GoStraight, Turn180, Halt };
 //List of commands for robot
 vector<Command> CommandList;
 
+int CommandListIndex;
+boolean ActionRequired;
+
+float DesiredAngle;
+float PreviousAngle;
+
+float upperBoundAngle;
+float lowerBoundAngle;
+
+
+
+
 //vector<Pair> CoordinateList;
 
 // Stores the algorithm output of a vector of Pairs
@@ -604,7 +618,7 @@ void detectIntersection()
 		if (((rightStrength > 1) || (leftStrength > 1)) && (centered == true))
 		{
 			intDetected = true;
-			cout << "Intersection Detected." << endl;
+			//cout << "Intersection Detected." << endl;
 		}
 
 		// Check for a left turn
@@ -1155,7 +1169,7 @@ void dumbLineFollow()
 	// Update linear and rotational speed based on sensor information
 	if (blackSensorCount > 0.0)
 	{
-		setVirtualCarSpeed(virtualCarLinearSpeed_seed, virtualCarAngularSpeed_seed * tiltSum);
+		setVirtualCarSpeed(virtualCarLinearSpeed_seed, virtualCarAngularSpeed_seed * tiltSum * 2);
 	}
 	else
 	{
@@ -1163,18 +1177,147 @@ void dumbLineFollow()
 	}
 }
 
+
+float wrapAngle(float angle) {
+
+	if (angle >= 360) {
+		angle = angle - 360;
+	}
+	else if (angle < 0) {
+		angle = angle + 360;
+	}
+
+	return angle;
+}
+
+float calculateDesiredAngle(Command current) {
+	float newAngle;
+
+	switch (current) {
+	case TurnLeft:
+		newAngle = PreviousAngle + 90;
+		break;
+
+	case TurnRight:
+		newAngle = PreviousAngle - 90;
+		break;
+
+	case Turn180:
+		newAngle = PreviousAngle + 180;
+		break; 
+	}
+
+	newAngle = wrapAngle(newAngle);
+	return newAngle;
+
+}
+
+
 void turnLeft()
 {
-	setVirtualCarSpeed(virtualCarLinearSpeed_seed * .1, virtualCarAngularSpeed_seed);
+	setVirtualCarSpeed(virtualCarLinearSpeed_seed * .5, virtualCarAngularSpeed_seed * .8);
 }
 
 void turnRight() {
-	setVirtualCarSpeed(virtualCarLinearSpeed_seed * .1, -virtualCarAngularSpeed_seed);
+	setVirtualCarSpeed(virtualCarLinearSpeed_seed * .5, -virtualCarAngularSpeed_seed * .8);
 }
 
 void goStraight()
 {
 	setVirtualCarSpeed(virtualCarLinearSpeed_seed, 0);
+}
+
+void pivot() {
+	setVirtualCarSpeed(0, virtualCarAngularSpeed_seed * 2);
+}
+
+void TurnLeftatintersection() {
+
+	float difference = wrapAngle(currentCarAngle - PreviousAngle);
+
+	if ((difference >= 85) && (difference <= 90)) {
+		CommandListIndex++;
+		ActionRequired = false;
+		intDetected = false;
+	}
+	else {
+		turnLeft();
+	}
+
+
+}
+
+void TurnRightatintersection() {
+
+	float difference = wrapAngle(PreviousAngle - currentCarAngle);
+
+	if ((difference >= 85) && (difference <= 90)) {
+		CommandListIndex++;
+		ActionRequired = false;
+		intDetected = false;
+	}
+	else {
+		turnRight();
+	}
+
+}
+
+void GoStraighttatintersection() {
+	goStraight();
+	if (straightTimer.getTimer() > 0.5)
+	{	
+		CommandListIndex++;
+		ActionRequired = false;
+		intDetected = false;
+		
+	}
+
+}
+
+void turn180() {
+
+	float difference = wrapAngle(currentCarAngle - PreviousAngle);
+
+	if ((difference >= 170) && (difference <= 190)) {
+		CommandListIndex++;
+		ActionRequired = false;
+		intDetected = false;
+	}
+	else {
+		pivot();
+	}
+}
+
+
+void RobotControl(Command currcommand) {
+
+	switch (currcommand) {
+		case TurnLeft:
+		
+			TurnLeftatintersection();
+			break;
+
+		case TurnRight:
+			
+			TurnRightatintersection();
+			break;
+
+		case GoStraight:
+		
+			GoStraighttatintersection();
+			break;
+
+		case Turn180:
+		
+			turn180();
+			break;
+
+			//TODO: HALT STUFF
+		case Halt:
+			break;
+
+	}
+
 }
 
 
@@ -1195,6 +1338,24 @@ int virtualCarInit()
 
 	// INITIALISATION CODE
 	CommandListIndex = 0;
+	 
+	// TODO REMOVE THIS TESTING CODE
+	CommandList.clear(); 
+	for (int i = 0; i < 30; i++) {
+		CommandList.push_back(TurnLeft);
+		CommandList.push_back(TurnRight);
+		CommandList.push_back(GoStraight);
+		CommandList.push_back(Turn180);
+		CommandList.push_back(TurnLeft);
+		CommandList.push_back(GoStraight);
+		CommandList.push_back(TurnLeft);
+		CommandList.push_back(Turn180);
+		CommandList.push_back(TurnRight);
+		CommandList.push_back(Turn180);
+		CommandList.push_back(GoStraight);
+		CommandList.push_back(TurnRight);
+	}
+
 
 	// Get the level from the user
 	cout << "Enter desired level\n0 -> Debug Mode\n1 -> Level 1 Logic\n2 -> Level 2 Logic" << endl;
@@ -1270,9 +1431,8 @@ int virtualCarUpdate()
 	// DEBUG
 	if (level == 0)
 	{
-		dumbLineFollow();
-		//detectIntersection();
-		ConvertToVisitedMap();
+		//dumbLineFollow();
+		detectIntersection();
 		statusReport();
 
 		/*
@@ -1283,6 +1443,39 @@ int virtualCarUpdate()
 			turnLeft90OnSpot();
 		}
 		*/
+
+		// CODE TO TRY AND TURN AT A INTERSECTION
+		//TODO clean up stuff before all this
+		Command current = CommandList.at(CommandListIndex);
+
+		//RUN ONCE CODE FOR AN ACTION
+		if (intDetected && !ActionRequired) {
+			ActionRequired = true;
+			current = CommandList.at(CommandListIndex);
+			PreviousAngle = currentCarAngle;
+			cout << "Initial Angle: " << PreviousAngle << endl;
+
+			if (current != GoStraight) {
+				cout << "doing a turn" << endl;
+				DesiredAngle = calculateDesiredAngle(current);
+				upperBoundAngle = wrapAngle(DesiredAngle + 10);
+				lowerBoundAngle = wrapAngle(DesiredAngle - 10);
+			}
+			else if (current == GoStraight) {
+				straightTimer.resetTimer();
+
+			}
+			else {
+				;
+			}
+		}
+
+		if(ActionRequired) {
+			RobotControl(current);
+		}
+		else {
+			dumbLineFollow();
+		}
 	}
 
 	// Level 1
