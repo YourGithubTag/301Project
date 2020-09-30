@@ -1156,7 +1156,7 @@ void dumbLineFollow()
 	// Update linear and rotational speed based on sensor information
 	if (blackSensorCount > 0.0)
 	{
-		setVirtualCarSpeed(virtualCarLinearSpeed_seed, virtualCarAngularSpeed_seed * tiltSum);
+		setVirtualCarSpeed(virtualCarLinearSpeed_seed, virtualCarAngularSpeed_seed * tiltSum * 2);
 	}
 	else
 	{
