@@ -536,6 +536,9 @@ Pair topLeft, topRight, botLeft, botRight;
 // 0=no inter, 1=T from bottom, 2=T from left, 3=T from right, 4=Left Turn, 5=Right Turn, 6=Dead end
 int typeOfInt = 0;
 
+// Variable to store the lines which are unvisited
+vector<Pair> Unvisited;
+
 
 /*********************** OUR FUNCTIONS ***********************/
 
@@ -747,85 +750,85 @@ void FollowInstructions() {
 			}
 		}
 		else if (direction == 2) {
-			while ((algoOut[i].first == algoOut[i + 1].first) && (algoOut[i].second == algoOut[i + 1].second + 1)) {
-				//Add go straight commands if it is possible to turn but command says go straight
-				if (intersectionmap[(algoOut[i].first - 1)][(algoOut[i].second)] != 5 || intersectionmap[(algoOut[i].first + 1)][(algoOut[i].second)] != 5) {
-					CommandList.push_back(nextcommand);
-				}
-				i++;
-			}
-			// Instructions for turning right
-			if ((algoOut[i].first) == (algoOut[i + 1].first + 1) && algoOut[i].second == (algoOut[i + 1].second)) {
-				nextcommand = TurnRight;
+		while ((algoOut[i].first == algoOut[i + 1].first) && (algoOut[i].second == algoOut[i + 1].second + 1)) {
+			//Add go straight commands if it is possible to turn but command says go straight
+			if (intersectionmap[(algoOut[i].first - 1)][(algoOut[i].second)] != 5 || intersectionmap[(algoOut[i].first + 1)][(algoOut[i].second)] != 5) {
 				CommandList.push_back(nextcommand);
-				direction = 1;
 			}
-			// Instructions for turning left
-			if ((algoOut[i].first) == (algoOut[i + 1].first - 1) && algoOut[i].second == (algoOut[i + 1].second)) {
-				nextcommand = TurnLeft;
-				CommandList.push_back(nextcommand);
-				direction = 3;
-			}
-			// Instructions for turning 180
-			if ((algoOut[i].first == algoOut[i + 1].first) && (algoOut[i].second == algoOut[i + 1].second - 1)) {
-				nextcommand = Turn180;
-				CommandList.push_back(nextcommand);
-				direction = 4;
-			}
+			i++;
+		}
+		// Instructions for turning right
+		if ((algoOut[i].first) == (algoOut[i + 1].first + 1) && algoOut[i].second == (algoOut[i + 1].second)) {
+			nextcommand = TurnRight;
+			CommandList.push_back(nextcommand);
+			direction = 1;
+		}
+		// Instructions for turning left
+		if ((algoOut[i].first) == (algoOut[i + 1].first - 1) && algoOut[i].second == (algoOut[i + 1].second)) {
+			nextcommand = TurnLeft;
+			CommandList.push_back(nextcommand);
+			direction = 3;
+		}
+		// Instructions for turning 180
+		if ((algoOut[i].first == algoOut[i + 1].first) && (algoOut[i].second == algoOut[i + 1].second - 1)) {
+			nextcommand = Turn180;
+			CommandList.push_back(nextcommand);
+			direction = 4;
+		}
 		}
 		else if (direction == 3) {
-			while ((algoOut[i].first == ((algoOut[i + 1].first) - 1)) && (algoOut[i + 1].second == algoOut[i].second)) {
-				//Add go straight commands if it is possible to turn but command says go straight
-				if (intersectionmap[(algoOut[i].first)][(algoOut[i].second) - 1] != 5 || intersectionmap[(algoOut[i].first)][(algoOut[i].second) + 1] != 5) {
-					CommandList.push_back(nextcommand);
-				}
-				i++;
-			}
-			// Instructions for turning right
-			if ((algoOut[i].first) == (algoOut[i + 1].first) && algoOut[i].second == (algoOut[i + 1].second + 1)) {
-				nextcommand = TurnRight;
+		while ((algoOut[i].first == ((algoOut[i + 1].first) - 1)) && (algoOut[i + 1].second == algoOut[i].second)) {
+			//Add go straight commands if it is possible to turn but command says go straight
+			if (intersectionmap[(algoOut[i].first)][(algoOut[i].second) - 1] != 5 || intersectionmap[(algoOut[i].first)][(algoOut[i].second) + 1] != 5) {
 				CommandList.push_back(nextcommand);
-				direction = 2;
 			}
-			// Instructions for turning left
-			if ((algoOut[i].first) == (algoOut[i + 1].first) && algoOut[i].second == (algoOut[i + 1].second - 1)) {
-				nextcommand = TurnLeft;
-				CommandList.push_back(nextcommand);
-				direction = 4;
-			}
-			// Instructions for turning 180
-			if ((algoOut[i].first == ((algoOut[i + 1].first) + 1)) && (algoOut[i + 1].second == algoOut[i].second)) {
-				nextcommand = Turn180;
-				CommandList.push_back(nextcommand);
-				direction = 1;
-			}
+			i++;
+		}
+		// Instructions for turning right
+		if ((algoOut[i].first) == (algoOut[i + 1].first) && algoOut[i].second == (algoOut[i + 1].second + 1)) {
+			nextcommand = TurnRight;
+			CommandList.push_back(nextcommand);
+			direction = 2;
+		}
+		// Instructions for turning left
+		if ((algoOut[i].first) == (algoOut[i + 1].first) && algoOut[i].second == (algoOut[i + 1].second - 1)) {
+			nextcommand = TurnLeft;
+			CommandList.push_back(nextcommand);
+			direction = 4;
+		}
+		// Instructions for turning 180
+		if ((algoOut[i].first == ((algoOut[i + 1].first) + 1)) && (algoOut[i + 1].second == algoOut[i].second)) {
+			nextcommand = Turn180;
+			CommandList.push_back(nextcommand);
+			direction = 1;
+		}
 		}
 		else if (direction == 4) {
-			while ((algoOut[i].first == algoOut[i + 1].first) && (algoOut[i + 1].second - 1 == algoOut[i].second)) {
-				//Add go straight commands if it is possible to turn but command says go straight
-				if (intersectionmap[(algoOut[i].first - 1)][(algoOut[i].second)] != 5 || intersectionmap[(algoOut[i].first + 1)][(algoOut[i].second)] != 5) {
-					CommandList.push_back(nextcommand);
-				}
-				i++;
-			}
-			// Instructions for turning right
-			if ((algoOut[i].first) == (algoOut[i + 1].first - 1) && algoOut[i].second == (algoOut[i + 1].second)) {
-				nextcommand = TurnRight;
+		while ((algoOut[i].first == algoOut[i + 1].first) && (algoOut[i + 1].second - 1 == algoOut[i].second)) {
+			//Add go straight commands if it is possible to turn but command says go straight
+			if (intersectionmap[(algoOut[i].first - 1)][(algoOut[i].second)] != 5 || intersectionmap[(algoOut[i].first + 1)][(algoOut[i].second)] != 5) {
 				CommandList.push_back(nextcommand);
-				direction = 3;
 			}
-			// Instructions for turning left
-			if ((algoOut[i].first) == (algoOut[i + 1].first + 1) && algoOut[i].second == (algoOut[i + 1].second)) {
-				nextcommand = TurnLeft;
-				CommandList.push_back(nextcommand);
-				direction = 1;
-			}
-			// Instructions for turning 180
-			if ((algoOut[i].first == algoOut[i + 1].first) && (algoOut[i].second == algoOut[i + 1].second + 1)) {
-				nextcommand = Turn180;
-				CommandList.push_back(nextcommand);
-				direction = 2;
-			}
+			i++;
+		}
+		// Instructions for turning right
+		if ((algoOut[i].first) == (algoOut[i + 1].first - 1) && algoOut[i].second == (algoOut[i + 1].second)) {
+			nextcommand = TurnRight;
+			CommandList.push_back(nextcommand);
+			direction = 3;
+		}
+		// Instructions for turning left
+		if ((algoOut[i].first) == (algoOut[i + 1].first + 1) && algoOut[i].second == (algoOut[i + 1].second)) {
+			nextcommand = TurnLeft;
+			CommandList.push_back(nextcommand);
+			direction = 1;
+		}
+		// Instructions for turning 180
+		if ((algoOut[i].first == algoOut[i + 1].first) && (algoOut[i].second == algoOut[i + 1].second + 1)) {
+			nextcommand = Turn180;
+			CommandList.push_back(nextcommand);
+			direction = 2;
+		}
 		}
 	}
 	nextcommand = Halt;
@@ -836,6 +839,63 @@ void FollowInstructions() {
 
 	for (int i = 0; i < CommandList.size(); i++) {
 		cout << "Command = " << CommandList[i] << endl;
+	}
+}
+
+
+void PairsofUnvisitedLines() {
+	int tempvisited[15][19];
+
+	for (int i = 0; i < 15; i++) {
+		for (int j = 0; j < 19; j++){
+			tempvisited[i][j] = visited[i][j];
+		}
+	}
+	
+
+	//Go through every point
+	Pair templinestart;
+	Pair templineend;
+	int index = 0;
+	for (int i = 0; i < 15; i++) {
+		for (int j = 0; j < 19; j++) {
+			if ((intersectionmap[i][j] != 5) && (tempvisited[i][j] == 0)) {
+				if (intersectionmap[i][j + 1] == 5 || tempvisited[i][j + 1] == 1) {
+					templinestart.first = i;
+					templinestart.second = j;
+					templineend.first = i;
+					templineend.second = j;
+					int k = i;
+					while ((intersectionmap[k][j] != 5) && (tempvisited[k][j] == 0)) {
+						tempvisited[k][j] = 1;
+						templineend.first = k;
+						if ((k + 1) == 15) {
+							break;
+						}
+						k++;
+					}
+					Unvisited.push_back(templinestart);
+					Unvisited.push_back(templineend);
+				}
+			}
+			if ((intersectionmap[i][j] != 5) && (tempvisited[i][j] != 0)) {
+				templinestart.first = i;
+				templinestart.second = j;
+				templineend.first = i;
+				templineend.second = j;
+				int k = j;
+				while ((intersectionmap[i][k] != 5) && (tempvisited[i][k] == 0)) {
+					tempvisited[i][k] = 1;
+					templineend.second = k;
+					if ((k + 1) == 19) {
+						break;
+					}
+					k++;
+				}
+				Unvisited.push_back(templinestart);
+				Unvisited.push_back(templineend);
+			}
+		}
 	}
 }
 
