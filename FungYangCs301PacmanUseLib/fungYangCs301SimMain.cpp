@@ -1388,23 +1388,8 @@ int virtualCarInit()
 
 	// INITIALISATION CODE
 	CommandListIndex = 0;
-	 
-	// TODO REMOVE THIS TESTING CODE
 	CommandList.clear(); 
-	for (int i = 0; i < 30; i++) {
-		CommandList.push_back(TurnLeft);
-		CommandList.push_back(TurnRight);
-		CommandList.push_back(GoStraight);
-		CommandList.push_back(Turn180);
-		CommandList.push_back(TurnLeft);
-		CommandList.push_back(GoStraight);
-		CommandList.push_back(TurnLeft);
-		CommandList.push_back(Turn180);
-		CommandList.push_back(TurnRight);
-		CommandList.push_back(Turn180);
-		CommandList.push_back(GoStraight);
-		CommandList.push_back(TurnRight);
-	}
+
 
 
 	// Get the level from the user
