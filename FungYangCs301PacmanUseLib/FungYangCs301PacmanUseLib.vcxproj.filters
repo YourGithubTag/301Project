@@ -24,9 +24,6 @@
     <ClInclude Include="data.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Header.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="fungYangCs301SimMain.cpp">
@@ -35,23 +32,5 @@
     <ClCompile Include="data.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="debug.log" />
-    <Text Include="Release\FungYangCs301PacmanUseLib.Build.CppClean.log" />
-    <Text Include="Release\FungYangCs301PacmanUseLib.log" />
-    <Text Include="Release\FungYangCs301PacmanUseLib.vcxproj.FileListAbsolute.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <Library Include="freeglut.lib" />
-    <Library Include="freeglut_static.lib" />
-    <Library Include="FungYangCs301PacmenRobotSimGameLib.lib" />
-  </ItemGroup>
-  <ItemGroup>
-    <Object Include="Release\data.obj" />
-    <Object Include="Release\fungYangCs301SimMain.obj" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Release\FungYangCs301PacmanUseLib.exe.recipe" />
   </ItemGroup>
 </Project>

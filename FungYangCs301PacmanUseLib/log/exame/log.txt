@@ -1,2 +1,0 @@
-2020-9-28-14-28-1 : foodHitCount = 1 out of 129 ;  foodHitCellPos = (17 , 11) ; idxToErase = 106 ; superFoodHitCount = 0 out of 5 ; ghostHitCount = 0 ; ghostEatenCount = 0 ; 
-2020-9-28-14-28-2 : foodHitCount = 2 out of 129 ;  foodHitCellPos = (17 , 10) ; idxToErase = 93 ; superFoodHitCount = 0 out of 5 ; ghostHitCount = 0 ; ghostEatenCount = 0 ; 
