@@ -1079,7 +1079,7 @@ void statusReport()
 		cout << "current Cell X, Y = " << coordToCellX(currentCarPosCoord_X) << " , " << coordToCellY(currentCarPosCoord_Y) << endl;
 		cout << "-----------------------------------------" << endl;
 		// Print out the map containing where we have visited
-		cout << "Visited map" << endl;
+		/*cout << "Visited map" << endl;
 		for (int i = 0; i < 15; ++i)
 		{
 			for (int j = 0; j < 19; ++j)
@@ -1097,7 +1097,32 @@ void statusReport()
 				cout << map[i][j] << ' ';
 			}
 			cout << endl;
+		}*/
+
+		cout << "Current command index = " << CommandListIndex << endl;
+		cout << "Current command = ";
+		switch (CommandList[CommandListIndex])
+		{
+		case 0:
+			cout << "Turn Left" << endl;
+			break;
+		case 1:
+			cout << "Turn Right" << endl;
+			break;
+		case 2:
+			cout << "Go Straight" << endl;
+			break;
+		case 3:
+			cout << "Turn 180" << endl;
+			break;
+		case 4:
+			cout << "Halt" << endl;
+			break;
+		default:
+			cout << "ERROR" << endl;
+			break;
 		}
+
 	}
 	//}---------------------------------------------------------------
 }
@@ -1150,8 +1175,8 @@ void initialiseOrderMap()
 	for (int i = 0; i < 5; i++)
 	{
 		// Get row & col of the current food pill
-		row = food_list[i][0];
-		col = food_list[i][1];
+		row = food_list[i][1];
+		col = food_list[i][0];
 		// If current food pill is a road, turn into a wall
 		if (order_map[row][col] == 1)
 		{
@@ -1163,8 +1188,8 @@ void initialiseOrderMap()
 void updateOrderMap(int i)
 {
 	// Get coordinates of the given food pill
-	int row = food_list[i][0];
-	int col = food_list[i][1];
+	int row = food_list[i][1];
+	int col = food_list[i][0];
 
 	// Clear the selected food pill
 	if (order_map[row][col] == 0)
@@ -1265,11 +1290,11 @@ float calculateDesiredAngle(Command current) {
 
 void turnLeft()
 {
-	setVirtualCarSpeed(virtualCarLinearSpeed_seed * .5, virtualCarAngularSpeed_seed * .8);
+	setVirtualCarSpeed(virtualCarLinearSpeed_seed * .3, virtualCarAngularSpeed_seed * .8);
 }
 
 void turnRight() {
-	setVirtualCarSpeed(virtualCarLinearSpeed_seed * .5, -virtualCarAngularSpeed_seed * .8);
+	setVirtualCarSpeed(virtualCarLinearSpeed_seed * .3, -virtualCarAngularSpeed_seed * .8);
 }
 
 void goStraight()
@@ -1338,12 +1363,12 @@ void turn180() {
 	}
 }
 
-Pair convertFoodtoPair(int position) {
-	Pair toReturn; 
-	toReturn.first = food_list[position][0];
-	toReturn.second= food_list[position][0];
-	return toReturn;
-}
+//Pair convertFoodtoPair(int position) {
+//	Pair toReturn; 
+//	toReturn.first = food_list[position][1];
+//	toReturn.second= food_list[position][0];
+//	return toReturn;
+//}
 
 void RobotControl(Command currcommand) {
 
@@ -1388,19 +1413,17 @@ int virtualCarInit()
 
 	virtualCarLinearSpeed_seed = 0.4;
 	virtualCarAngularSpeed_seed = 50;
-	currentCarPosCoord_X = 6;
-	currentCarPosCoord_Y = -3;
-	currentCarAngle = 361;
+	currentCarPosCoord_X = cellToCoordX(1);
+	currentCarPosCoord_Y = cellToCoordY(1);
+
+	Pair StartPos;
+	StartPos.second =  coordToCellX(currentCarPosCoord_X);
+	StartPos.first = coordToCellY(currentCarPosCoord_Y);
+	currentCarAngle = wrapAngle((float)-90);
 
 	// INITIALISATION CODE
 	CommandListIndex = 0;
 	CommandList.clear(); 
-
-
-
-	// Get the level from the user
-	cout << "Enter desired level\n0 -> Debug Mode\n1 -> Level 1 Logic\n2 -> Level 2 Logic" << endl;
-	cin >> level;
 
 	// Find corners of the given map
 	findMapCorners();
@@ -1416,17 +1439,53 @@ int virtualCarInit()
 
 	initialiseOrderMap();
 
-	Pair Foodpos;
-	aStarSearch(order_map, start, Foodpos);
+	cout << "Ordered" << endl;
 
-	for (int i = 1; i < 5; i++ ) {
-		updateOrderMap(i);
-		Foodpos = convertFoodtoPair(i)
+	for (int i = 0; i < 15; i++)
+	{
+		for (int j = 0; j < 19; j++)
+		{
+			cout << order_map[i][j] << " ";
+		}
+		cout << endl;
 	}
+
+	cout << "==================================" << endl;
+
+	cout << "Inverted" << endl;
+
+	for (int i = 0; i < 15; i++)
+	{
+		for (int j = 0; j < 19; j++)
+		{
+			cout << invertedMap[i][j] << " ";
+		}
+		cout << endl;
+	}
+
+	Pair Foodpos;
+	Pair prevFood = StartPos;
+
+	for (int i = 0; i < 5; i++ ) {
+		updateOrderMap(i);
+		Foodpos.first = food_list[i][1];
+		Foodpos.second = food_list[i][0];
+
+		cout << "DestX: " << Foodpos.first << endl;
+		cout << "DestY: " << Foodpos.second << endl;
+		cout << "Source first : " << prevFood.first << endl;
+		cout << "Source second: " << prevFood.second << endl;
+
+		aStarSearch(order_map, prevFood, Foodpos);
+		prevFood = Foodpos;
 	
+
+	}
 
 	// Convert algorithm output to robot instructions
 	FollowInstructions();
+	cout << "ALGO list: " << algoOut.size() << endl;
+	cout << "Command list: " << CommandList.size() << endl;
 
 	return 1;
 }
@@ -1436,73 +1495,52 @@ int virtualCarUpdate()
 	float linspeed = virtualCarLinearSpeed_seed;
 	float angspeed = virtualCarAngularSpeed_seed;
 
-	// DEBUG
-	if (level == 0)
+
+	detectIntersection();
+	statusReport();
+
+	/*
+	if (myTimer.getTimer() > 0.5)
 	{
-		//dumbLineFollow();
-		detectIntersection();
-		statusReport();
+		myTimer.resetTimer();
 
-		/*
-		if (myTimer.getTimer() > 0.5)
-		{
-			myTimer.resetTimer();
+		turnLeft90OnSpot();
+	}
+	*/
 
-			turnLeft90OnSpot();
+	// CODE TO TRY AND TURN AT A INTERSECTION
+	//TODO clean up stuff before all this
+	Command current = CommandList.at(CommandListIndex);
+
+	//RUN ONCE CODE FOR AN ACTION
+	if (intDetected && !ActionRequired) {
+		ActionRequired = true;
+		current = CommandList.at(CommandListIndex);
+		PreviousAngle = currentCarAngle;
+		cout << "Initial Angle: " << PreviousAngle << endl;
+
+		if (current != GoStraight) {
+			cout << "doing a turn" << endl;
+			DesiredAngle = calculateDesiredAngle(current);
+			upperBoundAngle = wrapAngle(DesiredAngle + 10);
+			lowerBoundAngle = wrapAngle(DesiredAngle - 10);
 		}
-		*/
+		else if (current == GoStraight) {
+			straightTimer.resetTimer();
 
-		// CODE TO TRY AND TURN AT A INTERSECTION
-		//TODO clean up stuff before all this
-		Command current = CommandList.at(CommandListIndex);
-
-		//RUN ONCE CODE FOR AN ACTION
-		if (intDetected && !ActionRequired) {
-			ActionRequired = true;
-			current = CommandList.at(CommandListIndex);
-			PreviousAngle = currentCarAngle;
-			cout << "Initial Angle: " << PreviousAngle << endl;
-
-			if (current != GoStraight) {
-				cout << "doing a turn" << endl;
-				DesiredAngle = calculateDesiredAngle(current);
-				upperBoundAngle = wrapAngle(DesiredAngle + 10);
-				lowerBoundAngle = wrapAngle(DesiredAngle - 10);
-			}
-			else if (current == GoStraight) {
-				straightTimer.resetTimer();
-
-			}
-			else {
-				;
-			}
-		}
-
-		if(ActionRequired) {
-			RobotControl(current);
 		}
 		else {
-			dumbLineFollow();
+			;
 		}
 	}
 
-	// Level 1
-	else if (level == 1)
-	{
-
+	if(ActionRequired) {
+		RobotControl(current);
 	}
-
-	// Level 2
-	else if (level == 2)
-	{
-
+	else {
+		dumbLineFollow();
 	}
-
-	else
-	{
-		cout << "Invalid level number." << endl;
-		return 1;
-	}
+	
 	
 	return 1;
 }
