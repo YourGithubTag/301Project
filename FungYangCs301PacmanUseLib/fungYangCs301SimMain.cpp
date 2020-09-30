@@ -514,6 +514,9 @@ int invertedMap[15][19];
 //A NEW Map (15x19) recording the positions that the Car has been to
 int visited[15][19];
 
+// Odered map for level 2 that allows robot to eat food in a given sequence
+int order_map[15][19];
+
 // Keeps track of which level was requested
 int level;
 
@@ -1121,6 +1124,57 @@ void invertMap()
 	}
 }
 
+void initialiseOrderMap()
+{
+	// Initialise a map where all the food is treated as a wall
+	// Copy the original map
+	for (int i = 0; i < 15; i++)
+	{
+		for (int j = 0; j < 19; j++)
+		{
+			order_map[i][j] = invertedMap[i][j];
+		}
+	}
+
+	int row = 0;
+	int col = 0;
+	// Turn all food into walls
+	for (int i = 0; i < 5; i++)
+	{
+		// Get row & col of the current food pill
+		row = food_list[i][0];
+		col = food_list[i][1];
+		// If current food pill is a road, turn into a wall
+		if (order_map[row][col] == 1)
+		{
+			order_map[row][col] = 0;
+		}
+	}
+}
+
+void updateOrderMap(int i)
+{
+	// Get coordinates of the given food pill
+	int row = food_list[i][0];
+	int col = food_list[i][1];
+
+	// Clear the selected food pill
+	if (order_map[row][col] == 0)
+	{
+		order_map[row][col] = 1;
+	}
+}
+
+//void getFood()
+//{
+//	for (int i = 0; i < 5; i++) {
+//		aStarSearch(updateOrderMap(i), startpoint, )
+//	}
+	
+
+
+//}
+
 // Movement Functions
 void dumbLineFollow()
 {
@@ -1215,33 +1269,64 @@ int virtualCarInit()
 	aStarSearch(invertedMap, topRight, botLeft);
 	//algoOut.pop_back();
 
-	cout << "We are testing multiple astar calls";
+	/*cout << "We are testing multiple astar calls";
 
 	for (int i = 0; i < algoOut.size(); i++) {
 		cout << "Next = " << algoOut[i].first << "," << algoOut[i].second << endl;
+	}*/
+
+	initialiseOrderMap();
+	for (int i = 0; i < 15; ++i)
+	{
+		for (int j = 0; j < 19; ++j)
+		{
+			cout << order_map[i][j] << ' ';
+		}
+		cout << endl;
 	}
-
-
+	cout << "===============================================" << endl;
+	updateOrderMap(0);
+	for (int i = 0; i < 15; ++i)
+	{
+		for (int j = 0; j < 19; ++j)
+		{
+			cout << order_map[i][j] << ' ';
+		}
+		cout << endl;
+	}
+	cout << "===============================================" << endl;
+	updateOrderMap(1);
+	updateOrderMap(2);
+	updateOrderMap(3);
+	for (int i = 0; i < 15; ++i)
+	{
+		for (int j = 0; j < 19; ++j)
+		{
+			cout << order_map[i][j] << ' ';
+		}
+		cout << endl;
+	}
+	cout << "===============================================" << endl;
 
 	// Convert algorithm output to robot instructions
 	//FollowInstructions();
 
 	// Print out the map containing intersections
-	for (int i = 0; i < 15; ++i)
+	/*for (int i = 0; i < 15; ++i)
 	{
 		for (int j = 0; j < 19; ++j)
 		{
 			cout << intersectionmap[i][j] << ' ';
 		}
 		cout << endl;
-	}
+	}*/
 
 
-	for (int i = 0; i < algoOut.size(); i++)
+	/*for (int i = 0; i < algoOut.size(); i++)
 	{
 		cout << "(" << algoOut[i].first << "," << algoOut[i].second << ") -> ";
 	}
-	cout << endl;
+	cout << endl;*/
 
 	cout << "===============================================" << endl;
 
@@ -1320,6 +1405,9 @@ void ConvertToVisitedMap()
 
 	}
 }
+
+
+
 
 
 int main(int argc, char** argv)
