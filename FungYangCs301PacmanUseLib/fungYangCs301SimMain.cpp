@@ -530,6 +530,9 @@ int invertedMap[15][19];
 //A NEW Map (15x19) recording the positions that the Car has been to
 int visited[15][19];
 
+// Odered map for level 2 that allows robot to eat food in a given sequence
+int order_map[15][19];
+
 // Keeps track of which level was requested
 int level;
 
@@ -1119,34 +1122,56 @@ void invertMap()
 	}
 }
 
-void initializeVisitedMap()
+void initialiseOrderMap()
 {
-	//visited map (15x19) is initialised with all Zeros
+	// Initialise a map where all the food is treated as a wall
+	// Copy the original map
 	for (int i = 0; i < 15; i++)
 	{
 		for (int j = 0; j < 19; j++)
 		{
-			visited[i][j] = 1;
+			order_map[i][j] = invertedMap[i][j];
+		}
+	}
+
+	int row = 0;
+	int col = 0;
+	// Turn all food into walls
+	for (int i = 0; i < 5; i++)
+	{
+		// Get row & col of the current food pill
+		row = food_list[i][0];
+		col = food_list[i][1];
+		// If current food pill is a road, turn into a wall
+		if (order_map[row][col] == 1)
+		{
+			order_map[row][col] = 0;
 		}
 	}
 }
 
-void ConvertToVisitedMap()
+void updateOrderMap(int i)
 {
-	//This function runs every tick, gets the currentCarCoord and then converts to Cell.
-	//Convert X-coord into Cell-X
-	int Cell_X = coordToCellX(currentCarPosCoord_X);
+	// Get coordinates of the given food pill
+	int row = food_list[i][0];
+	int col = food_list[i][1];
 
-	//Convert Y-coord into Cell-Y
-	int Cell_Y = coordToCellY(currentCarPosCoord_Y);
-
-	//Set visited positions to be 1 if not 1 already
-	if ((visited[Cell_Y][Cell_X] == 1) && (map[Cell_Y][Cell_X] == 0))
+	// Clear the selected food pill
+	if (order_map[row][col] == 0)
 	{
-		visited[Cell_Y][Cell_X] = 0;
+		order_map[row][col] = 1;
 	}
 }
 
+//void getFood()
+//{
+//	for (int i = 0; i < 5; i++) {
+//		aStarSearch(updateOrderMap(i), startpoint, )
+//	}
+	
+
+
+//}
 
 // Movement Functions
 void dumbLineFollow()
@@ -1390,11 +1415,44 @@ int virtualCarInit()
 	aStarSearch(invertedMap, topRight, botLeft);
 	//algoOut.pop_back();
 
-	cout << "We are testing multiple astar calls";
+	/*cout << "We are testing multiple astar calls";
 
 	for (int i = 0; i < algoOut.size(); i++) {
 		cout << "Next = " << algoOut[i].first << "," << algoOut[i].second << endl;
+	}*/
+
+	initialiseOrderMap();
+	for (int i = 0; i < 15; ++i)
+	{
+		for (int j = 0; j < 19; ++j)
+		{
+			cout << order_map[i][j] << ' ';
+		}
+		cout << endl;
 	}
+	cout << "===============================================" << endl;
+	updateOrderMap(0);
+	for (int i = 0; i < 15; ++i)
+	{
+		for (int j = 0; j < 19; ++j)
+		{
+			cout << order_map[i][j] << ' ';
+		}
+		cout << endl;
+	}
+	cout << "===============================================" << endl;
+	updateOrderMap(1);
+	updateOrderMap(2);
+	updateOrderMap(3);
+	for (int i = 0; i < 15; ++i)
+	{
+		for (int j = 0; j < 19; ++j)
+		{
+			cout << order_map[i][j] << ' ';
+		}
+		cout << endl;
+	}
+	cout << "===============================================" << endl;
 
 	// Convert algorithm output to robot instructions
 	FollowInstructions();
@@ -1498,6 +1556,39 @@ int virtualCarUpdate()
 	
 	return 1;
 }
+
+
+//This function runs every tick, gets the currentCarCoord and then converts to Cell.
+void ConvertToVisitedMap() 
+{
+	//visited map (15x19) is initialised with all Zeros
+	for (int i = 0; i < 15; i++)
+	{
+		for (int j = 0; j < 19; j++)
+		{
+			visited[i][j] = 0;
+		}
+	}
+
+	// Runs through every tick?????
+	if (myTimer.getTimer() > 1)
+	{
+		myTimer.resetTimer();
+
+		//Convert X-coord into Cell-X
+		int Cell_X = coordToCellX(currentCarPosCoord_X);
+
+		//Convert Y-coord into Cell-Y
+		int Cell_Y = coordToCellY(currentCarPosCoord_Y);
+
+		//Set visited positions to be 1
+		visited[Cell_X][Cell_Y] = 1;
+
+	}
+}
+
+
+
 
 
 int main(int argc, char** argv)
