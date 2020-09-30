@@ -1338,6 +1338,12 @@ void turn180() {
 	}
 }
 
+Pair convertFoodtoPair(int position) {
+	Pair toReturn; 
+	toReturn.first = food_list[position][0];
+	toReturn.second= food_list[position][0];
+	return toReturn;
+}
 
 void RobotControl(Command currcommand) {
 
@@ -1408,85 +1414,19 @@ int virtualCarInit()
 	// Initialize the visitedMap
 	initializeVisitedMap();
 
-	// Call the shortest path algorithm between the four corners of the map
-	/*Pair src = { 1, 1 };
-	Pair dest = { 13, 17 };
-	aStarSearch(invertedMap, src, dest);*/
-
-	//Shortest path form top left to bottom right
-	aStarSearch(invertedMap, topLeft, botRight);
-	algoOut.pop_back();
-
-	//Shortest path form bottom right to top right
-	aStarSearch(invertedMap, botRight, topRight);
-	algoOut.pop_back();
-
-	//Shortest path form top right to bottom left
-	aStarSearch(invertedMap, topRight, botLeft);
-	//algoOut.pop_back();
-
-	/*cout << "We are testing multiple astar calls";
-
-	for (int i = 0; i < algoOut.size(); i++) {
-		cout << "Next = " << algoOut[i].first << "," << algoOut[i].second << endl;
-	}*/
-
 	initialiseOrderMap();
-	for (int i = 0; i < 15; ++i)
-	{
-		for (int j = 0; j < 19; ++j)
-		{
-			cout << order_map[i][j] << ' ';
-		}
-		cout << endl;
+
+	Pair Foodpos;
+	aStarSearch(order_map, start, Foodpos);
+
+	for (int i = 1; i < 5; i++ ) {
+		updateOrderMap(i);
+		Foodpos = convertFoodtoPair(i)
 	}
-	cout << "===============================================" << endl;
-	updateOrderMap(0);
-	for (int i = 0; i < 15; ++i)
-	{
-		for (int j = 0; j < 19; ++j)
-		{
-			cout << order_map[i][j] << ' ';
-		}
-		cout << endl;
-	}
-	cout << "===============================================" << endl;
-	updateOrderMap(1);
-	updateOrderMap(2);
-	updateOrderMap(3);
-	for (int i = 0; i < 15; ++i)
-	{
-		for (int j = 0; j < 19; ++j)
-		{
-			cout << order_map[i][j] << ' ';
-		}
-		cout << endl;
-	}
-	cout << "===============================================" << endl;
+	
 
 	// Convert algorithm output to robot instructions
 	FollowInstructions();
-
-	// DEBUGGING CODE
-
-	//// Print out the map containing intersections
-	//for (int i = 0; i < 15; ++i)
-	//{
-	//	for (int j = 0; j < 19; ++j)
-	//	{
-	//		cout << intersectionmap[i][j] << ' ';
-	//	}
-	//	cout << endl;
-	//}
-
-	/*for (int i = 0; i < algoOut.size(); i++)
-	{
-		cout << "(" << algoOut[i].first << "," << algoOut[i].second << ") -> ";
-	}
-	cout << endl;
-	*/
-
-	cout << "===============================================" << endl;
 
 	return 1;
 }
